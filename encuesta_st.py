@@ -18,35 +18,35 @@ st.markdown(f"""
     </style>
 """, unsafe_allow_html=True)
 
+import streamlit as st
 
-st.title("Encuesta")
-
-alpha = 0.9
+# Variables de estilo
+alpha = 0.1  # Transparencia del fondo
 font_size_header = "18px"
 font_size_cells = "14px"
-max_table_width = "180px"  # ancho máximo de la tabla
 
+# Datos
 index = ["Costo", "Tiempo de Viaje", "Tiempo de Caminata", "Tiempo de Espera", "Transbordo"]
 opcion_a = [1000, 30, 5, 9, 0]
 opcion_b = [2000, 20, 8, 12, 1]
 
-estilos = f"""
+# Estilo CSS actualizado: ancho 100%
+estilo_tabla = f"""
 <style>
-table, th, td {{
-  border: 1px solid #ddd;
-  text-align: center;
-  padding: 6px;
+table {{
   border-collapse: collapse;
   width: 100%;
-  max-width: {max_table_width};
-  margin-left: auto;
-  margin-right: auto;
+}}
+
+th, td {{
+  border: 1px solid #ddd;
+  padding: 6px 12px;
+  text-align: center;
 }}
 
 th {{
   background-color: rgba(255, 255, 255, {alpha});
   font-size: {font_size_header};
-  font-weight: bold;
 }}
 
 td {{
@@ -56,32 +56,24 @@ td {{
 </style>
 """
 
-tabla_idx = estilos + '<table><tr><th>Criterio</th></tr>'
-for item in index:
-    tabla_idx += f"<tr><td>{item}</td></tr>"
-tabla_idx += "</table>"
+# Construcción de la tabla HTML
+tabla_html = estilo_tabla + "<table>"
+tabla_html += "<tr><th>Criterio</th><th>Opción A</th><th>Opción B</th></tr>"
 
-tabla_a = '<table><tr><th>Opción A</th></tr>'
-for val in opcion_a:
-    tabla_a += f"<tr><td>{val}</td></tr>"
-tabla_a += "</table>"
+for i in range(len(index)):
+    tabla_html += f"<tr><td>{index[i]}</td><td>{opcion_a[i]}</td><td>{opcion_b[i]}</td></tr>"
 
-tabla_b = '<table><tr><th>Opción B</th></tr>'
-for val in opcion_b:
-    tabla_b += f"<tr><td>{val}</td></tr>"
-tabla_b += "</table>"
+tabla_html += "</table>"
 
-col1, col2, col3 = st.columns([1, 1, 1])
+# Mostrar tabla en Streamlit
+st.markdown(tabla_html, unsafe_allow_html=True)
 
-with col1:
-    st.markdown(tabla_idx, unsafe_allow_html=True)
-
-with col2:
-    st.markdown(tabla_a, unsafe_allow_html=True)
+# Botones de elección
+col_criterio, col_a, col_b = st.columns(3)
+with col_a:
     if st.button("Elegir A", use_container_width=True):
         st.success("Elegiste Opción A")
-
-with col3:
-    st.markdown(tabla_b, unsafe_allow_html=True)
+with col_b:
     if st.button("Elegir B", use_container_width=True):
         st.success("Elegiste Opción B")
+
