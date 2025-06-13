@@ -68,12 +68,38 @@ tabla_html += "</table>"
 # Mostrar tabla en Streamlit
 st.markdown(tabla_html, unsafe_allow_html=True)
 
-# Botones de elección
-col_criterio, col_a, col_b = st.columns(3)
-with col_a:
-    if st.button("Elegir A", use_container_width=True):
-        st.success("Elegiste Opción A")
-with col_b:
-    if st.button("Elegir B", use_container_width=True):
-        st.success("Elegiste Opción B")
+def texto_con_fondo(
+    texto,
+    bg_color="rgba(255, 255, 255, 0.95)",
+    padding="0.8rem",
+    font_size="18px",
+    bold=True,
+    text_color="#000000",
+    centrar=True,
+    margen="0 0 2rem 0"  # margen inferior de 2rem
+):
+    weight = "bold" if bold else "normal"
+    alineacion = "center" if centrar else "left"
+    
+    st.markdown(f"""
+    <div style="
+        background-color: {bg_color};
+        padding: {padding};
+        margin: {margen};
+        border-radius: 8px;
+        font-size: {font_size};
+        font-weight: {weight};
+        color: {text_color};
+        text-align: {alineacion};
+    ">
+        {texto}
+    </div>
+    """, unsafe_allow_html=True)
 
+
+
+texto_con_fondo(
+    "¿Cuál Elegiría?")
+
+button_a = st.button("Elijo A", use_container_width= True)
+button_b = st.button("Elijo B", use_container_width= True)
