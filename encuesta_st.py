@@ -21,7 +21,7 @@ st.markdown(f"""
 import streamlit as st
 
 # Variables de estilo
-alpha = 0.1  # Transparencia del fondo
+alpha = 0.9  # Transparencia del fondo
 font_size_header = "18px"
 font_size_cells = "14px"
 
