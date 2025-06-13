@@ -21,17 +21,15 @@ st.markdown(f"""
 
 st.title("Encuesta")
 
-# Variables para controlar tamaño de letra y transparencia
-alpha = 0.9  # Transparencia del fondo (0 a 1)
-font_size_header = "30px"  # Tamaño letra encabezados
-font_size_cells = "18px"   # Tamaño letra celdas
+alpha = 0.9
+font_size_header = "18px"
+font_size_cells = "14px"
+max_table_width = "250px"  # ancho máximo de la tabla
 
-# Datos
 index = ["Costo", "Tiempo de Viaje", "Tiempo de Caminata", "Tiempo de Espera", "Transbordo"]
 opcion_a = [1000, 30, 5, 9, 0]
 opcion_b = [2000, 20, 8, 12, 1]
 
-# Estilos con variables CSS
 estilos = f"""
 <style>
 table, th, td {{
@@ -40,6 +38,9 @@ table, th, td {{
   padding: 6px;
   border-collapse: collapse;
   width: 100%;
+  max-width: {max_table_width};
+  margin-left: auto;
+  margin-right: auto;
 }}
 
 th {{
@@ -55,25 +56,21 @@ td {{
 </style>
 """
 
-# Tabla índice
 tabla_idx = estilos + '<table><tr><th>Criterio</th></tr>'
 for item in index:
     tabla_idx += f"<tr><td>{item}</td></tr>"
 tabla_idx += "</table>"
 
-# Tabla opción A
 tabla_a = '<table><tr><th>Opción A</th></tr>'
 for val in opcion_a:
     tabla_a += f"<tr><td>{val}</td></tr>"
 tabla_a += "</table>"
 
-# Tabla opción B
 tabla_b = '<table><tr><th>Opción B</th></tr>'
 for val in opcion_b:
     tabla_b += f"<tr><td>{val}</td></tr>"
 tabla_b += "</table>"
 
-# Mostrar en columnas
 col1, col2, col3 = st.columns([1, 1, 1])
 
 with col1:
