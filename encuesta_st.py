@@ -24,7 +24,7 @@ st.title("Encuesta")
 alpha = 0.9
 font_size_header = "18px"
 font_size_cells = "14px"
-max_table_width = "250px"  # ancho máximo de la tabla
+max_table_width = "200px"  # ancho máximo de la tabla
 
 index = ["Costo", "Tiempo de Viaje", "Tiempo de Caminata", "Tiempo de Espera", "Transbordo"]
 opcion_a = [1000, 30, 5, 9, 0]
