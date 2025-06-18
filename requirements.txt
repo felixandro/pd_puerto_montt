@@ -1,1 +1,2 @@
 pandas==2.2.3
+supabase== 2.15.3
