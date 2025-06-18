@@ -171,19 +171,19 @@ if st.session_state.perfiles and not st.session_state.ingreso:
 
     texto_con_fondo("¿En qué rango se encuentra su ingreso familiar mensual?", upper_margin=0)
 
-    ing_familiar = st.selectbox(
+    ing_familiar = st.radio(
         "",
         ["", 
-         "Menos de $500.000", 
-         "Entre $500.001 y $750.000", 
-         "Entre $750.001 y $1.000.000",
-         "Entre $1.000.001 y $1.250.000",
-         "Entre $1.250.001 y $1.500.000", 
-         "Entre $1.500.001 y $1.750.000",
-         "Entre $1.750.001 y $2.000.000",
-         "Entre $2.000.001 y $2.250.000",
-         "Entre $2.250.001 y $2.500.000",
-         "Más de $2.500.000"]
+         "Menos de 500.000", 
+         "Entre    500.001 y   750.000", 
+         "Entre    750.001 y 1.000.000",
+         "Entre  1.000.001 y 1.250.000",
+         "Entre  1.250.001 y 1.500.000", 
+         "Entre  1.500.001 y 1.750.000",
+         "Entre  1.750.001 y 2.000.000",
+         "Entre  2.000.001 y 2.250.000",
+         "Entre  2.250.001 y 2.500.000",
+         "Más de 2.500.000"]
     )
 
     if veh_hogar != "" and ing_familiar != "":
@@ -208,7 +208,12 @@ if st.session_state.perfiles and not st.session_state.ingreso:
 if st.session_state.ingreso:
     texto_con_fondo("¡Encuesta Finalizada!", upper_margin=0)
 
-    texto_con_fondo("Recargue la página para realizar una nueva encuesta.", upper_margin=0)
+    
+    new_survey_button = st.button("Nueva Encuesta", use_container_width=True)
+
+    if new_survey_button:
+        st.session_state.clear()
+        st.session_state.clear()
 
     #st.write("Tus respuestas han sido guardadas exitosamente.")
     
