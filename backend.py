@@ -98,9 +98,11 @@ def perfil_eleccion(niveles_a, niveles_b):
     emojis_dict = {
         "Auto": "🚗",
         "Teleférico": "🚡",
-        "Taxi": "🚕",
+        "Taxi Colectivo": "🚕",
         "Taxibus": "🚌",
-        "Tren": "🚆"
+        "Tren": "🚆",
+        "Taxibus - Teleférico": "🚌🚡",
+        "Taxibus - Tren - Taxibus": "🚌🚆🚌"
     }
 
     # Fila encabezado como primera fila con <td>
