@@ -20,6 +20,38 @@ def agregar_imagen_fondo(url):
         </style>
     """, unsafe_allow_html=True)
 
+def definir_nro_disenho(lugar, modo_par):
+    """
+    Define el número de diseño de la encuesta.
+    
+    Returns:
+        int: Número de diseño.
+    """
+
+    if lugar == "Centro":
+        if modo_par == "Manuel Montt - Centro":
+            return 1
+        elif modo_par == "Mirasol - Centro":
+            return 4
+        elif modo_par == "Alerce - Centro":
+            return 7
+    elif lugar == "Manuel Montt":
+        if modo_par == "Taxibus":
+            return 2
+        elif modo_par == "Taxi Colectivo":
+            return 3
+    elif lugar == "Mirasol":
+        if modo_par == "Taxibus":
+            return 5
+        elif modo_par == "Taxi Colectivo":
+            return 6
+    elif lugar == "Alerce":
+        if modo_par == "Taxibus":
+            return 8
+        elif modo_par == "Taxi Colectivo":
+            return 9
+        elif modo_par == "Tren":
+            return 10
 
 def perfil_eleccion(niveles_a, niveles_b):
     # Variables de estilo
@@ -138,12 +170,13 @@ def perfil_eleccion(niveles_a, niveles_b):
 
 
 
-def texto_con_fondo(texto, upper_margin="1rem"):
-    bg_color="rgba(255, 255, 255, 0.95)"
+def texto_con_fondo(texto, 
+                    upper_margin="1rem", 
+                    bg_color="rgba(255, 255, 255, 0.95)",
+                    text_color="#000000"):
     padding="0.8rem"
     font_size="18px"
     bold=True
-    text_color="#000000"
     centrar=True
     margen=f"0 0 {upper_margin} 0"  # margen inferior de 2rem
     weight = "bold" if bold else "normal"
