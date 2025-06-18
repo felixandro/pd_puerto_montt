@@ -4,6 +4,7 @@ from backend import agregar_imagen_fondo, perfil_eleccion, texto_con_fondo, guar
 from random import choice
 import json
 import time
+import textwrap
 
 if "hora_id" not in st.session_state:
     st.session_state.hora_id = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -146,16 +147,31 @@ if st.session_state.id_encuestador and not st.session_state.caracteristicas:
 
 # Texto introductorio
 if st.session_state.caracteristicas and not st.session_state.texto_introductorio:
-    texto_introductorio =         """
-        **¡Bienvenido a la Encuesta de Preferencias de Transporte!**
 
-        Esta encuesta tiene como objetivo comprender las preferencias de transporte de los residentes de Puerto Montt. 
-        Su participación es fundamental para mejorar la planificación y el desarrollo del sistema de transporte en la ciudad.
+    if st.session_state.lugar == "Centro":
+        origen = st.session_state.modo_par.split(" - ")[0]
+    else:
+        origen = st.session_state.lugar
 
-        Por favor, responda las siguientes preguntas con sinceridad. Sus respuestas serán tratadas de manera confidencial y se utilizarán únicamente con fines estadísticos.
+    nro_disenho = st.session_state.nro_disenho
+    with open(f'Disenhos/disenho_{nro_disenho}.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    altA_label = data[f"alt{st.session_state.alt_A}"]
+    altB_label = data[f"alt{st.session_state.alt_B}"]
+    
+    texto_introductorio = textwrap.dedent(f"""
+        El objetivo de esta encuesta es conocer sus preferencias respecto al medio de transporte que usaría ante una eventual construcción de un **sistema de teleféricos** en la ciudad de Puerto Montt
         
-        ¡Gracias por su colaboración!
-        """
+        Para esto suponga que debe viajar desde **{origen}** hasta el **Centro** de la ciudad y puede elegir entre **{altA_label}** y **{altB_label}**.
+
+        Para cada alternativa le presentaremos el **costo** y los **tiempos** que implicaría realizar el viaje en esta.
+
+        Necesitamos que compare ambas opciones y seleccione aquella que elegiría en un **contexto real**.
+
+        Tenga en cuenta que el costo, tiempo de viaje, espera y caminata irán cambiando, por lo que tómese su tiempo para analizar antes de contestar.
+
+        Por último, se deja en claro que la encuesta es completamente **anónima** """)
     
     texto_con_fondo(texto_introductorio, upper_margin="1rem")
 
