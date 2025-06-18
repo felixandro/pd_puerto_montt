@@ -21,7 +21,7 @@ def agregar_imagen_fondo(url):
     """, unsafe_allow_html=True)
 
 
-def perfil_eleccion(niveles_a, niveles_b):
+def perfil_eleccion_v0(niveles_a, niveles_b):
     # Variables de estilo
     alpha = 0.95
     font_size_header = "18px"
@@ -114,6 +114,109 @@ def perfil_eleccion(niveles_a, niveles_b):
 
     # Mostrar en Streamlit
     st.markdown(tabla_html, unsafe_allow_html=True)
+
+def perfil_eleccion(niveles_a, niveles_b):
+    # Variables de estilo
+    alpha = 0.95
+    font_size_header = "18px"
+    font_size_cells = "14px"
+
+    # Datos
+    index = ["Costo", "Minutos de Viaje", "Minutos de Espera", "Minutos de Caminata", "Transbordos"]
+
+    # Estilo CSS
+    estilo_tabla = f"""
+    <style>
+    table {{
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+    }}
+    td {{
+        border: 1px solid #ddd;
+        padding: 6px 12px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: {font_size_cells};
+    }}
+    /* Estilo fila encabezado (primera fila) */
+    tr:first-child td {{
+        background-color: rgba(255, 255, 255, {alpha});
+        font-size: {font_size_header};
+        font-weight: bold;
+    }}
+    /* Anchos fijos columnas */
+    tr:first-child td:nth-child(1),
+    td:nth-child(1) {{
+        width: 30%;
+    }}
+    tr:first-child td:nth-child(2),
+    td:nth-child(2) {{
+        width: 35%;
+    }}
+    tr:first-child td:nth-child(3),
+    td:nth-child(3) {{
+        width: 35%;
+    }}
+    /* Estilo primera columna */
+    td.col-criterio {{
+        color: black;
+        font-weight: 600;
+        background-color: rgba(255, 255, 255, {alpha});
+    }}
+    /* Estilo segunda columna (rojo) */
+    td.col-a {{
+        color: red;
+        font-weight: bold;
+        background-color: rgba(255, 255, 255, {alpha});
+    }}
+    /* Estilo tercera columna (azul) */
+    td.col-b {{
+        color: blue;
+        font-weight: bold;
+        background-color: rgba(255, 255, 255, {alpha});
+    }}
+    /* Filas pares con gris suave */
+    tr:nth-child(even) td {{
+        background-color: #f5f5f5;
+    }}
+    </style>
+    """
+
+    # Construcción de la tabla HTML
+    tabla_html = estilo_tabla + "<table>"
+
+    # Fila encabezado como primera fila con <td>
+    tabla_html += (
+        f"<tr>"
+        f"<td class='col-criterio'>Criterio</td>"
+        f"<td class='col-a'>{niveles_a[0]}</td>"
+        f"<td class='col-b'>{niveles_b[0]}</td>"
+        f"</tr>"
+    )
+
+    # Filas de datos
+    for i in range(len(index)):
+        if i == 0:
+            # Formatear los valores de costo con separador de miles y signo $
+            niv_a = f"${niveles_a[i+1]:,}".replace(",", ".")
+            niv_b = f"${niveles_b[i+1]:,}".replace(",", ".")
+        else:
+            niv_a = niveles_a[i+1]
+            niv_b = niveles_b[i+1]
+        tabla_html += (
+            f"<tr>"
+            f"<td class='col-criterio'>{index[i]}</td>"
+            f"<td class='col-a'>{niv_a}</td>"
+            f"<td class='col-b'>{niv_b}</td>"
+            f"</tr>"
+        )
+
+    tabla_html += "</table>"
+
+    # Mostrar en Streamlit
+    st.markdown(tabla_html, unsafe_allow_html=True)
+
 
 
 def texto_con_fondo(texto, upper_margin="1rem"):
