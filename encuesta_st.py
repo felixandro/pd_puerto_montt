@@ -171,7 +171,7 @@ if st.session_state.perfiles and not st.session_state.ingreso:
 
     texto_con_fondo("¿En qué rango se encuentra su ingreso familiar mensual?", upper_margin=0)
 
-    ing_familiar = st.checkbox(
+    ing_familiar = st.selectbox(
         "",
         ["", 
          "Menos de 500.000", 
