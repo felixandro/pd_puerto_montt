@@ -18,7 +18,7 @@ if "ingreso" not in st.session_state:
     st.session_state.ingreso = False
 
 if "nro_disenho" not in st.session_state:
-    st.session_state.nro_disenho = 1
+    st.session_state.nro_disenho = st.query_params["n_dis"]
 
 if "lista_tarjetas" not in st.session_state:
     st.session_state.lista_tarjetas = list(range(1,9))
