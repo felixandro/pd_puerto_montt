@@ -1,105 +1,227 @@
 import streamlit as st
 import pandas as pd
+from backend import agregar_imagen_fondo, perfil_eleccion, texto_con_fondo, guardar_respuestas, guardar_ingresos
+from random import choice
+import json
+import time
+
+if "hora_id" not in st.session_state:
+    st.session_state.hora_id = time.strftime("%Y-%m-%d %H:%M:%S")
+
+if "caracteristicas" not in st.session_state:
+    st.session_state.caracteristicas = False
+
+if "perfiles" not in st.session_state:
+    st.session_state.perfiles = False
+
+if "ingreso" not in st.session_state:
+    st.session_state.ingreso = False
+
+if "nro_disenho" not in st.session_state:
+    st.session_state.nro_disenho = 1
+
+if "lista_tarjetas" not in st.session_state:
+    st.session_state.lista_tarjetas = list(range(1,9))
+    st.session_state.nro_tarjeta = choice(st.session_state.lista_tarjetas)
+    st.session_state.orden_tarjetas = [st.session_state.nro_tarjeta]
+
+if "alt_A" not in st.session_state:
+    alternativas = [1, 2]
+    st.session_state.alt_A = choice(alternativas)
+    alternativas.remove(st.session_state.alt_A)
+    st.session_state.alt_B = alternativas[0]
+
+if "elecciones_dict" not in st.session_state:
+    st.session_state.elecciones_dict = {}
+
+nro_disenho = st.session_state.nro_disenho
+
+with open(f'Disenhos/disenho_{nro_disenho}.json', 'r', encoding='utf-8') as f:
+    data = json.load(f)
+
+altA_label = data[f"alt{st.session_state.alt_A}"]
+altB_label = data[f"alt{st.session_state.alt_B}"]
 
 st.set_page_config(layout="centered")
 
-# Imagen de fondo (usa tu propia URL o archivo local codificado en base64)
+# Imagen de fondo
 background_url = "https://storage.googleapis.com/chile-travel-cdn/2021/07/puerto-montt_prin-min.jpg"
+#agregar_imagen_fondo(background_url)
 
-st.markdown(f"""
-    <style>
-    .stApp {{
-        background-image: url("{background_url}");
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        background-color: rgba(255,255,255,0.8);
-    }}
-    </style>
-""", unsafe_allow_html=True)
+# Características del Encuestado
 
-import streamlit as st
+if not st.session_state.caracteristicas:
 
-# Variables de estilo
-alpha = 0.9  # Transparencia del fondo
-font_size_header = "18px"
-font_size_cells = "14px"
+    texto_con_fondo("Género", upper_margin=0)
 
-# Datos
-index = ["Costo", "Tiempo de Viaje", "Tiempo de Caminata", "Tiempo de Espera", "Transbordo"]
-opcion_a = [1000, 30, 5, 9, 0]
-opcion_b = [2000, 20, 8, 12, 1]
+    genero = st.selectbox(
+        "",
+        ["", "Femenino", "Masculino", "No Responde"]
+    )
 
-# Estilo CSS actualizado: ancho 100%
-estilo_tabla = f"""
-<style>
-table {{
-  border-collapse: collapse;
-  width: 100%;
-}}
+    texto_con_fondo("Edad", upper_margin=0)
 
-th, td {{
-  border: 1px solid #ddd;
-  padding: 6px 12px;
-  text-align: center;
-}}
+    edad = st.number_input(
+        "",
+        min_value=14,
+        max_value=100,
+        value=None,
+        step=1
+    )
 
-th {{
-  background-color: rgba(255, 255, 255, {alpha});
-  font-size: {font_size_header};
-}}
+    texto_con_fondo("¿Cuál es el propósito de su viaje?", upper_margin=0)
 
-td {{
-  background-color: rgba(255, 255, 255, {alpha});
-  font-size: {font_size_cells};
-}}
-</style>
-"""
+    proposito = st.selectbox(
+        "",
+        ["", "Trabajo", "Estudio", "Otro"]
+    )
 
-# Construcción de la tabla HTML
-tabla_html = estilo_tabla + "<table>"
-tabla_html += "<tr><th>Criterio</th><th>Opción A</th><th>Opción B</th></tr>"
+    if genero != "" and edad != "" and proposito != "":
 
-for i in range(len(index)):
-    tabla_html += f"<tr><td>{index[i]}</td><td>{opcion_a[i]}</td><td>{opcion_b[i]}</td></tr>"
+        next_button_1 = st.button("Siguiente", use_container_width=True)
+        
+        if next_button_1:
+            st.session_state.caracteristicas = True
+            st.session_state.genero = genero
+            st.session_state.edad = edad
+            st.session_state.proposito = proposito
+            st.rerun()
 
-tabla_html += "</table>"
+# Perfiles de Elección
 
-# Mostrar tabla en Streamlit
-st.markdown(tabla_html, unsafe_allow_html=True)
+elif st.session_state.caracteristicas and not st.session_state.perfiles:
 
-def texto_con_fondo(
-    texto,
-    bg_color="rgba(255, 255, 255, 0.95)",
-    padding="0.8rem",
-    font_size="18px",
-    bold=True,
-    text_color="#000000",
-    centrar=True,
-    margen="0 0 2rem 0"  # margen inferior de 2rem
-):
-    weight = "bold" if bold else "normal"
-    alineacion = "center" if centrar else "left"
+    texto_con_fondo(f"Pregunta {len(st.session_state.orden_tarjetas)}", upper_margin=0)
+
+    niveles_a = [altA_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_A}"] + [0]
+    niveles_b = [altB_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"] + [0]
+    perfil_eleccion(niveles_a, niveles_b)
+
+    texto_con_fondo("¿Cuál alternativa elegiría?")
+
+    button_a = st.button(altA_label, use_container_width= True)
+    button_b = st.button(altB_label, use_container_width= True)
+
+    if button_a:
+        texto_con_fondo(f"Seleccionó {altA_label}")
+        st.session_state.elecciones_dict[st.session_state.nro_tarjeta] = altA_label
+        
+    if button_b:
+        texto_con_fondo(f"Seleccionó {altB_label}")
+        st.session_state.elecciones_dict[st.session_state.nro_tarjeta] = altB_label
+
+    if  st.session_state.nro_tarjeta in st.session_state.elecciones_dict:
+        button_next = st.button("Siguiente", use_container_width=True)
+        
+        if button_next:
+            st.session_state.lista_tarjetas.remove( st.session_state.nro_tarjeta)
+            hora_actual = time.strftime("%Y-%m-%d %H:%M:%S")
+            respuesta = {
+                        "hora_id": st.session_state.hora_id,
+                        "genero": st.session_state.genero,
+                        "edad": st.session_state.edad,
+                        "proposito": st.session_state.proposito,
+                        "disenho": st.session_state.nro_disenho,
+                        "tarjeta": st.session_state.nro_tarjeta,
+                        "a1": data[f"alt{st.session_state.alt_A}"],
+                        "c_a1": data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_A}"][0],
+                        "tv_a1": data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_A}"][1],
+                        "tc_a1": data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_A}"][2],
+                        "te_a1": data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_A}"][3],
+                        "tr_a1": None,
+                        "a2": data[f"alt{st.session_state.alt_B}"],
+                        "c_a2": data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"][0],
+                        "tv_a2": data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"][1],
+                        "tc_a2": data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"][2],
+                        "te_a2": data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"][3],
+                        "tr_a2": None,
+                        "choice": st.session_state.elecciones_dict[st.session_state.nro_tarjeta],
+                        "fecha": hora_actual
+                    }
+
+            guardar_respuestas(respuesta)
+
+            if len(st.session_state.elecciones_dict) <= 3:
+                st.session_state.nro_tarjeta = choice(st.session_state.lista_tarjetas)
+                st.session_state.orden_tarjetas.append(st.session_state.nro_tarjeta)
+                st.rerun()
+            else:
+                st.session_state.perfiles = True
+                st.rerun()
+
+                
+    st.divider()
+    st.write(f"Tarjeta seleccionada: {st.session_state.nro_tarjeta}")
+    st.write(f"Alternativa A: {st.session_state.alt_A} {altA_label}")
+    st.write(f"Alternativa B: {st.session_state.alt_B} {altB_label}")
+
+    st.write("Tus elecciones hasta ahora:")
+    st.write(st.session_state.elecciones_dict)
+    st.write("Orden de tarjetas seleccionadas:")
+    st.write(st.session_state.orden_tarjetas)
+
+if st.session_state.perfiles and not st.session_state.ingreso:
     
-    st.markdown(f"""
-    <div style="
-        background-color: {bg_color};
-        padding: {padding};
-        margin: {margen};
-        border-radius: 8px;
-        font-size: {font_size};
-        font-weight: {weight};
-        color: {text_color};
-        text-align: {alineacion};
-    ">
-        {texto}
-    </div>
-    """, unsafe_allow_html=True)
+    texto_con_fondo("¿Cuántos vehículos posee en el hogar?", upper_margin=0)
+
+    veh_hogar = st.selectbox(
+        "",
+        ["", "0", "1", "2 o más"]
+    )
+
+    texto_con_fondo("¿En qué rango se encuentra su ingreso familiar mensual?", upper_margin=0)
+
+    ing_familiar = st.selectbox(
+        "",
+        ["", 
+         "Menos de $500.000", 
+         "Entre $500.001 y $750.000", 
+         "Entre $750.001 y $1.000.000",
+         "Entre $1.000.001 y $1.250.000",
+         "Entre $1.250.001 y $1.500.000", 
+         "Entre $1.500.001 y $1.750.000",
+         "Entre $1.750.001 y $2.000.000",
+         "Entre $2.000.001 y $2.250.000",
+         "Entre $2.250.001 y $2.500.000",
+         "Más de $2.500.000"]
+    )
+
+    if veh_hogar != "" and ing_familiar != "":
+        next_button_2 = st.button("Finalizar Encuesta", use_container_width=True)
+        
+        if next_button_2:
+            st.session_state.ingreso = True
+            st.session_state.veh_hogar = veh_hogar
+            st.session_state.ing_familiar = ing_familiar
+            ingresos_respuesta = {
+                "hora_id": st.session_state.hora_id,
+                "genero": st.session_state.genero,
+                "edad": st.session_state.edad,
+                "proposito": st.session_state.proposito,
+                "veh_hogar": veh_hogar,
+                "ingreso": ing_familiar
+            }
+            guardar_ingresos(ingresos_respuesta)
+            st.rerun()
 
 
+if st.session_state.ingreso:
+    texto_con_fondo("¡Encuesta Finalizada!", upper_margin=0)
 
-texto_con_fondo(
-    "¿Cuál Elegiría?")
+    texto_con_fondo("Recargue la página para realizar una nueva encuesta.", upper_margin=0)
 
-button_a = st.button("Elijo A", use_container_width= True)
-button_b = st.button("Elijo B", use_container_width= True)
+    #st.write("Tus respuestas han sido guardadas exitosamente.")
+    
+    # Mostrar tabla de resultados
+    #st.write("Resultados de la Encuesta:")
+    
+    # Crear DataFrame con las respuestas
+    #df = pd.DataFrame(st.session_state.elecciones_dict.items(), columns=["Tarjeta", "Elección"])
+    
+    # Mostrar DataFrame como tabla
+    #st.dataframe(df, use_container_width=True)
+
+    # Mostrar información adicional
+    #st.write(f"Vehículos en el hogar: {st.session_state.veh_hogar}")
+    #st.write(f"Ingreso familiar mensual: {st.session_state.ing_familiar}")
+
