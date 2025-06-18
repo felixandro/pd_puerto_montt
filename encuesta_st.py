@@ -160,18 +160,14 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
     altA_label = data[f"alt{st.session_state.alt_A}"]
     altB_label = data[f"alt{st.session_state.alt_B}"]
     
-    texto_introductorio = textwrap.dedent(f"""
-        El objetivo de esta encuesta es conocer sus preferencias respecto al medio de transporte que usaría ante una eventual construcción de un **sistema de teleféricos** en la ciudad de Puerto Montt
-        
-        Para esto suponga que debe viajar desde **{origen}** hasta el **Centro** de la ciudad y puede elegir entre **{altA_label}** y **{altB_label}**.
+    texto_introductorio = textwrap.dedent(f"""        
+        A continuación, le propondremos una serie de situaciones hipotéticas de elección entre dos modos de transporte para realizar el mismo viaje que está haciendo hoy (Desde {origen} al Centro), para lo cual podrá elegir entre **{altA_label}** y **{altB_label}**
 
-        Para cada alternativa le presentaremos el **costo** y los **tiempos** que implicaría realizar el viaje en esta.
+        Cada alternativa será definida por el costo monetario y los tiempos de viaje, espera y caminata que implicaría. Para cada escenario le pedimos que indique cuál de las dos opciones elegiría si ambas estuvieran disponibles.
 
-        Necesitamos que compare ambas opciones y seleccione aquella que elegiría en un **contexto real**.
+        Sabemos que en una ciudad con desniveles pronunciados, sectores densamente poblados en altura y frecuentes problemas de congestión, es importante explorar nuevas formas de transporte. Sin embargo, queremos enfatizar que su elección no debe verse influida por si usted cree que el teleférico va o no a construirse. Lo más importante es que elija la alternativa que realmente refleje su preferencia personal, tal como si tuviera que tomar esa decisión en la vida real.
 
-        Tenga en cuenta que el costo, tiempo de viaje, espera y caminata irán cambiando, por lo que tómese su tiempo para analizar antes de contestar.
-
-        Por último, se deja en claro que la encuesta es completamente **anónima**""")
+        Favor analice cada escenario con detención y tenga presente que no hay respuestas correctas o incorrectas.""")
     
     texto_con_fondo(texto_introductorio, upper_margin="1rem")
 
