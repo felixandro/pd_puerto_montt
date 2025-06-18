@@ -1,12 +1,18 @@
 import streamlit as st
 import pandas as pd
-from backend import agregar_imagen_fondo, perfil_eleccion, texto_con_fondo, guardar_respuestas, guardar_ingresos
+from backend import agregar_imagen_fondo, perfil_eleccion, texto_con_fondo, guardar_respuestas, guardar_ingresos, definir_nro_disenho
 from random import choice
 import json
 import time
 
 if "hora_id" not in st.session_state:
     st.session_state.hora_id = time.strftime("%Y-%m-%d %H:%M:%S")
+
+if "id_encuestador" not in st.session_state:
+    st.session_state.id_encuestador = False
+
+if "texto_introductorio" not in st.session_state:
+    st.session_state.texto_introductorio = False
 
 if "caracteristicas" not in st.session_state:
     st.session_state.caracteristicas = False
@@ -17,8 +23,8 @@ if "perfiles" not in st.session_state:
 if "ingreso" not in st.session_state:
     st.session_state.ingreso = False
 
-if "nro_disenho" not in st.session_state:
-    st.session_state.nro_disenho = st.query_params["n_dis"]
+#if "nro_disenho" not in st.session_state:
+#    st.session_state.nro_disenho = st.query_params["n_dis"]
 
 if "lista_tarjetas" not in st.session_state:
     st.session_state.lista_tarjetas = list(range(1,9))
@@ -34,13 +40,8 @@ if "alt_A" not in st.session_state:
 if "elecciones_dict" not in st.session_state:
     st.session_state.elecciones_dict = {}
 
-nro_disenho = st.session_state.nro_disenho
+#nro_disenho = st.session_state.nro_disenho
 
-with open(f'Disenhos/disenho_{nro_disenho}.json', 'r', encoding='utf-8') as f:
-    data = json.load(f)
-
-altA_label = data[f"alt{st.session_state.alt_A}"]
-altB_label = data[f"alt{st.session_state.alt_B}"]
 
 st.set_page_config(layout="centered")
 
@@ -50,9 +51,64 @@ st.set_page_config(layout="centered")
 background_url = "https://raw.githubusercontent.com/felixandro/pd_puerto_montt/refs/heads/master/figura_fondo.png"
 agregar_imagen_fondo(background_url)
 
+# Identificación del Encuestador
+
+if not st.session_state.id_encuestador:
+    texto_con_fondo("ID Encuestador", upper_margin=0)
+
+    id_encuestador = st.text_input(
+        "",
+        placeholder="ID del Encuestador"
+    )
+
+    texto_con_fondo("Lugar de Encuesta", upper_margin=0)
+
+    lugar = st.selectbox(
+        "",
+        ["", "Centro", "Manuel Montt", "Mirasol", "Alerce"]
+    )
+
+    if id_encuestador != "" and lugar != "":
+        next_button_0 = st.button("Siguiente", use_container_width=True)
+        
+        if next_button_0:
+            st.session_state.id_encuestador = True
+            st.session_state.id_encuestador_valor = id_encuestador
+            st.session_state.lugar = lugar
+            st.rerun()
+
+
 # Características del Encuestado
 
-if not st.session_state.caracteristicas:
+if st.session_state.id_encuestador and not st.session_state.caracteristicas:
+
+    texto_con_fondo(f"ID Encuestador: {st.session_state.id_encuestador_valor}", 
+                    upper_margin="1rem",
+                    bg_color="rgba(10, 20, 176, 0.95)",
+                    text_color="#FFFFFF")
+    texto_con_fondo(f"Lugar de Encuesta: {st.session_state.lugar}", 
+                    upper_margin="1rem",
+                    bg_color="rgba(10, 20, 176, 0.95)",
+                    text_color="#FFFFFF")
+
+    if st.session_state.lugar == "Centro":
+        texto_con_fondo("Par OD", upper_margin=0)
+
+        modo_par = st.selectbox("",
+                                ["", "Manuel Montt - Centro", "Mirasol - Centro", "Alerce - Centro"])
+
+    else:
+
+        texto_con_fondo("Modo", upper_margin=0)
+        
+        if st.session_state.lugar == "Alerce":
+            modos_list = ["", "Taxibus", "Taxi Colectivo", "Tren"]
+
+        else:
+            modos_list = ["", "Taxibus", "Taxi Colectivo"]
+
+        modo_par = st.selectbox("",
+                                modos_list)
 
     texto_con_fondo("Género", upper_margin=0)
 
@@ -78,20 +134,51 @@ if not st.session_state.caracteristicas:
         ["", "Trabajo", "Estudio", "Otro"]
     )
 
-    if genero != "" and edad != "" and proposito != "":
+    if modo_par != "" and genero != "" and edad != "" and proposito != "":
 
         next_button_1 = st.button("Siguiente", use_container_width=True)
         
         if next_button_1:
             st.session_state.caracteristicas = True
+            st.session_state.modo_par = modo_par
             st.session_state.genero = genero
             st.session_state.edad = edad
             st.session_state.proposito = proposito
+            st.session_state.nro_disenho = definir_nro_disenho(st.session_state.lugar, st.session_state.modo_par)
             st.rerun()
+
+# Texto introductorio
+if st.session_state.caracteristicas and not st.session_state.texto_introductorio:
+    texto_introductorio =         """
+        **¡Bienvenido a la Encuesta de Preferencias de Transporte!**
+
+        Esta encuesta tiene como objetivo comprender las preferencias de transporte de los residentes de Puerto Montt. 
+        Su participación es fundamental para mejorar la planificación y el desarrollo del sistema de transporte en la ciudad.
+
+        Por favor, responda las siguientes preguntas con sinceridad. Sus respuestas serán tratadas de manera confidencial y se utilizarán únicamente con fines estadísticos.
+        
+        ¡Gracias por su colaboración!
+        """
+    
+    texto_con_fondo(texto_introductorio, upper_margin="1rem")
+
+    next_button_4 = st.button("Siguiente", use_container_width=True)
+    if next_button_4:
+        st.session_state.texto_introductorio = True
+        st.session_state.hora_id = time.strftime("%Y-%m-%d %H:%M:%S")
+        st.rerun()
 
 # Perfiles de Elección
 
-elif st.session_state.caracteristicas and not st.session_state.perfiles:
+elif st.session_state.texto_introductorio and not st.session_state.perfiles:
+
+    nro_disenho = st.session_state.nro_disenho
+    with open(f'Disenhos/disenho_{nro_disenho}.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    altA_label = data[f"alt{st.session_state.alt_A}"]
+    altB_label = data[f"alt{st.session_state.alt_B}"]
+
 
     texto_con_fondo(f"Pregunta {len(st.session_state.orden_tarjetas)} - ¿Cuál alternativa elegiría?", upper_margin=0)
 
@@ -117,6 +204,8 @@ elif st.session_state.caracteristicas and not st.session_state.perfiles:
             st.session_state.lista_tarjetas.remove( st.session_state.nro_tarjeta)
             hora_actual = time.strftime("%Y-%m-%d %H:%M:%S")
             respuesta = {
+                        "id_encuestador": st.session_state.id_encuestador_valor,
+                        "lugar": st.session_state.lugar,
                         "hora_id": st.session_state.hora_id,
                         "genero": st.session_state.genero,
                         "edad": st.session_state.edad,
@@ -194,6 +283,8 @@ if st.session_state.perfiles and not st.session_state.ingreso:
             st.session_state.veh_hogar = veh_hogar
             st.session_state.ing_familiar = ing_familiar
             ingresos_respuesta = {
+                "id_encuestador": st.session_state.id_encuestador_valor,
+                "lugar": st.session_state.lugar,
                 "hora_id": st.session_state.hora_id,
                 "genero": st.session_state.genero,
                 "edad": st.session_state.edad,
@@ -206,14 +297,17 @@ if st.session_state.perfiles and not st.session_state.ingreso:
 
 
 if st.session_state.ingreso:
-    texto_con_fondo("¡Encuesta Finalizada!", upper_margin=0)
+    texto_con_fondo("¡Encuesta Finalizada!", upper_margin="1rem")
 
-    
     new_survey_button = st.button("Nueva Encuesta", use_container_width=True)
 
     if new_survey_button:
+        id_encuestador = st.session_state.id_encuestador_valor
+        lugar = st.session_state.lugar
         st.session_state.clear()
-        st.session_state.clear()
+        st.session_state.id_encuestador = True
+        st.session_state.id_encuestador_valor = id_encuestador
+        st.session_state.lugar = lugar
 
     #st.write("Tus respuestas han sido guardadas exitosamente.")
     
