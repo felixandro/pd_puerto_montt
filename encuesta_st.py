@@ -150,15 +150,15 @@ elif st.session_state.caracteristicas and not st.session_state.perfiles:
                 st.rerun()
 
                 
-    st.divider()
-    st.write(f"Tarjeta seleccionada: {st.session_state.nro_tarjeta}")
-    st.write(f"Alternativa A: {st.session_state.alt_A} {altA_label}")
-    st.write(f"Alternativa B: {st.session_state.alt_B} {altB_label}")
+    #st.divider()
+    #st.write(f"Tarjeta seleccionada: {st.session_state.nro_tarjeta}")
+    #st.write(f"Alternativa A: {st.session_state.alt_A} {altA_label}")
+    #st.write(f"Alternativa B: {st.session_state.alt_B} {altB_label}")
 
-    st.write("Tus elecciones hasta ahora:")
-    st.write(st.session_state.elecciones_dict)
-    st.write("Orden de tarjetas seleccionadas:")
-    st.write(st.session_state.orden_tarjetas)
+    #st.write("Tus elecciones hasta ahora:")
+    #st.write(st.session_state.elecciones_dict)
+    #st.write("Orden de tarjetas seleccionadas:")
+    #st.write(st.session_state.orden_tarjetas)
 
 if st.session_state.perfiles and not st.session_state.ingreso:
     
