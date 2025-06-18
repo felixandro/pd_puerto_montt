@@ -170,7 +170,7 @@ def perfil_eleccion(niveles_a, niveles_b):
 
 
 
-def texto_con_fondo(texto, 
+def texto_con_fondo_v0(texto, 
                     upper_margin="1rem", 
                     bg_color="rgba(255, 255, 255, 0.95)",
                     text_color="#000000"):
@@ -192,6 +192,35 @@ def texto_con_fondo(texto,
         font-weight: {weight};
         color: {text_color};
         text-align: {alineacion};
+    ">
+        {texto}
+    </div>
+    """, unsafe_allow_html=True)
+
+def texto_con_fondo(texto, 
+                    upper_margin="1rem", 
+                    bg_color="rgba(255, 255, 255, 0.95)",
+                    text_color="#000000"):
+    padding = "0.8rem"
+    font_size = "18px"
+    bold = True
+    centrar = True
+    margen = f"0 0 {upper_margin} 0"
+    weight = "bold" if bold else "normal"
+    alineacion = "center" if centrar else "left"
+
+    st.markdown(f"""
+    <div style="
+        background-color: {bg_color};
+        padding: {padding};
+        margin: {margen};
+        border-radius: 8px;
+        font-size: {font_size};
+        font-weight: {weight};
+        color: {text_color};
+        text-align: {alineacion};
+        word-wrap: break-word;
+        overflow-wrap: break-word;
     ">
         {texto}
     </div>
