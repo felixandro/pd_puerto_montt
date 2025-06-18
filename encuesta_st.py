@@ -91,13 +91,11 @@ if not st.session_state.caracteristicas:
 
 elif st.session_state.caracteristicas and not st.session_state.perfiles:
 
-    texto_con_fondo(f"Pregunta {len(st.session_state.orden_tarjetas)}", upper_margin=0)
+    texto_con_fondo(f"Pregunta {len(st.session_state.orden_tarjetas)} - ¿Cuál alternativa elegiría?", upper_margin=0)
 
     niveles_a = [altA_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_A}"] + [0]
     niveles_b = [altB_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"] + [0]
     perfil_eleccion(niveles_a, niveles_b)
-
-    texto_con_fondo("¿Cuál alternativa elegiría?")
 
     button_a = st.button(altA_label, use_container_width= True)
     button_b = st.button(altB_label, use_container_width= True)
