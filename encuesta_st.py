@@ -281,7 +281,8 @@ if st.session_state.perfiles and not st.session_state.ingreso:
          "Entre  1.750.001 y 2.000.000",
          "Entre  2.000.001 y 2.250.000",
          "Entre  2.250.001 y 2.500.000",
-         "Más de 2.500.000"]
+         "Más de 2.500.000",
+         "No Responde"]
     )
 
     if veh_hogar != "" and ing_familiar != "":
