@@ -92,12 +92,23 @@ def perfil_eleccion(niveles_a, niveles_b):
     # Construcción de la tabla HTML
     tabla_html = estilo_tabla + "<table>"
 
+    modo_a = niveles_a[0]
+    modo_b = niveles_b[0]
+
+    emojis_dict = {
+        "Auto": "🚗",
+        "Teleférico": "🚡",
+        "Taxi": "🚕",
+        "Taxibus": "🚌",
+        "Tren": "🚆"
+    }
+
     # Fila encabezado como primera fila con <td>
     tabla_html += (
         f"<tr>"
         f"<td class='col-criterio'>Criterio</td>"
-        f"<td class='col-a'>{niveles_a[0]}</td>"
-        f"<td class='col-b'>{niveles_b[0]}</td>"
+        f"<td class='col-a'>{niveles_a[0]} {emojis_dict[modo_a]} </td>"
+        f"<td class='col-b'>{niveles_b[0]} {emojis_dict[modo_b]}</td>"
         f"</tr>"
     )
 
