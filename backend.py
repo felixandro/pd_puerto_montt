@@ -1,0 +1,129 @@
+import streamlit as st
+from supabase import create_client
+
+def agregar_imagen_fondo(url):
+    """
+    Agrega una imagen de fondo a la aplicación Streamlit.
+    
+    Args:
+        url (str): URL de la imagen de fondo.
+    """
+    st.markdown(f"""
+        <style>
+        .stApp {{
+            background-image: url("{url}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-color: rgba(255,255,255,0.8);
+        }}
+        </style>
+    """, unsafe_allow_html=True)
+
+
+def perfil_eleccion(niveles_a, niveles_b):
+    
+    # Variables de estilo
+    alpha = 0.9  # Transparencia del fondo
+    font_size_header = "18px"
+    font_size_cells = "14px"
+
+    # Datos
+    index = ["Costo", "Tiempo de Viaje", "Tiempo de Caminata", "Tiempo de Espera", "Transbordo"]
+
+    # Estilo CSS actualizado: ancho 100%
+    estilo_tabla = f"""
+    <style>
+    table {{
+    border-collapse: collapse;
+    width: 100%;
+    }}
+
+    th, td {{
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    text-align: center;
+    }}
+
+    th {{
+    background-color: rgba(255, 255, 255, {alpha});
+    font-size: {font_size_header};
+    }}
+
+    td {{
+    background-color: rgba(255, 255, 255, {alpha});
+    font-size: {font_size_cells};
+    }}
+    </style>
+    """
+
+    # Construcción de la tabla HTML
+    tabla_html = estilo_tabla + "<table>"
+
+    # Encabezado de la tabla
+    tabla_html += f"<tr><th>Criterio</th><th>{niveles_a[0]}</th><th>{niveles_b[0]}</th></tr>"
+
+    for i in range(len(index)):
+        tabla_html += f"<tr><td>{index[i]}</td><td>{niveles_a[i+1]}</td><td>{niveles_b[i+1]}</td></tr>"
+
+    tabla_html += "</table>"
+
+    # Mostrar tabla en Streamlit
+    st.markdown(tabla_html, unsafe_allow_html=True)
+
+
+def texto_con_fondo(texto, upper_margin="2rem"):
+    bg_color="rgba(255, 255, 255, 0.95)"
+    padding="0.8rem"
+    font_size="18px"
+    bold=True
+    text_color="#000000"
+    centrar=True
+    margen=f"0 0 {upper_margin} 0"  # margen inferior de 2rem
+    weight = "bold" if bold else "normal"
+    alineacion = "center" if centrar else "left"
+    
+    st.markdown(f"""
+    <div style="
+        background-color: {bg_color};
+        padding: {padding};
+        margin: {margen};
+        border-radius: 8px;
+        font-size: {font_size};
+        font-weight: {weight};
+        color: {text_color};
+        text-align: {alineacion};
+    ">
+        {texto}
+    </div>
+    """, unsafe_allow_html=True)
+
+
+
+def guardar_respuestas(respuestas):
+
+    print("Guardando respuestas:", respuestas)
+
+    # Configurar Supabase
+    SUPABASE_URL = "https://gkgxipnjsoxgqsaukhtg.supabase.co"
+    SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZ3hpcG5qc294Z3FzYXVraHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMTI1NjEsImV4cCI6MjA2NTY4ODU2MX0.TNyYDvpLhBX-Ocr03jzdo9GulXYfYMmOh0Vx20hlJfg"
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    print("hola")
+
+    response = supabase.table("bbdd_pd").insert(respuestas).execute()
+
+    print("sdadsa")
+
+def guardar_ingresos(ingresos):
+    """
+    Guarda los ingresos del usuario en la base de datos.
+    
+    Args:
+        ingresos (dict): Diccionario con los datos de ingresos del usuario.
+    """
+    SUPABASE_URL = "https://gkgxipnjsoxgqsaukhtg.supabase.co"
+    SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZ3hpcG5qc294Z3FzYXVraHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMTI1NjEsImV4cCI6MjA2NTY4ODU2MX0.TNyYDvpLhBX-Ocr03jzdo9GulXYfYMmOh0Vx20hlJfg"
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    response = supabase.table("ingresos").insert(ingresos).execute()
