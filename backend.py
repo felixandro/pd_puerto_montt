@@ -73,14 +73,14 @@ def perfil_eleccion_v0(niveles_a, niveles_b):
 
 import streamlit as st
 
-def perfil_eleccion(niveles_a, niveles_b):
+def perfil_eleccion_v1(niveles_a, niveles_b):
     # Variables de estilo
     alpha = 0.95
     font_size_header = "18px"
     font_size_cells = "14px"
 
     # Datos
-    index = ["Costo", "Minutos de Viaje", "Minutos de Caminata", "Minutos de Espera", "Transbordos"]
+    index = ["Costo", "Minutos de Viaje", "Minutos de Espera", "Minutos de Caminata", "Transbordos"]
 
     # Estilo CSS
     estilo_tabla = f"""
@@ -98,6 +98,8 @@ def perfil_eleccion(niveles_a, niveles_b):
     th {{
         background-color: rgba(255, 255, 255, {alpha});
         font-size: {font_size_header};
+        text-align: center;
+        vertical-align: middle;
     }}
     /* Estilo primera columna */
     td.col-criterio {{
@@ -134,6 +136,100 @@ def perfil_eleccion(niveles_a, niveles_b):
     for i in range(len(index)):
         if i == 0:
             # Formatear los valores de costo
+            niv_a = f"${niveles_a[i+1]:,}".replace(",", ".")
+            niv_b = f"${niveles_b[i+1]:,}".replace(",", ".")
+        else:
+            niv_a = niveles_a[i+1]
+            niv_b = niveles_b[i+1]
+        tabla_html += (
+            f"<tr>"
+            f"<td class='col-criterio'>{index[i]}</td>"
+            f"<td class='col-a'>{niv_a}</td>"
+            f"<td class='col-b'>{niv_b}</td>"
+            f"</tr>"
+        )
+
+    tabla_html += "</table>"
+
+    # Mostrar en Streamlit
+    st.markdown(tabla_html, unsafe_allow_html=True)
+
+def perfil_eleccion(niveles_a, niveles_b):
+    # Variables de estilo
+    alpha = 0.95
+    font_size_header = "18px"
+    font_size_cells = "14px"
+
+    # Datos
+    index = ["Costo", "Minutos de Viaje", "Minutos de Espera", "Minutos de Caminata", "Transbordos"]
+
+    # Estilo CSS
+    estilo_tabla = f"""
+    <style>
+    table {{
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+    }}
+    th, td {{
+        border: 1px solid #ddd;
+        padding: 6px 12px;
+        text-align: center;
+        vertical-align: middle;
+        font-size: {font_size_cells};
+    }}
+    th {{
+        background-color: rgba(255, 255, 255, {alpha});
+        font-size: {font_size_header};
+        font-weight: bold;
+        text-align: center;
+        vertical-align: middle;
+    }}
+    /* Anchos fijos columnas */
+    th:nth-child(1), td:nth-child(1) {{
+        width: 30%;
+    }}
+    th:nth-child(2), td:nth-child(2) {{
+        width: 35%;
+    }}
+    th:nth-child(3), td:nth-child(3) {{
+        width: 35%;
+    }}
+    /* Estilo primera columna */
+    td.col-criterio {{
+        color: black;
+        font-weight: 600;
+        background-color: rgba(255, 255, 255, {alpha});
+    }}
+    /* Estilo segunda columna (rojo) */
+    td.col-a {{
+        color: red;
+        font-weight: bold;
+        background-color: rgba(255, 255, 255, {alpha});
+    }}
+    /* Estilo tercera columna (azul) */
+    td.col-b {{
+        color: blue;
+        font-weight: bold;
+        background-color: rgba(255, 255, 255, {alpha});
+    }}
+    /* Filas pares con gris suave */
+    tr:nth-child(even) td {{
+        background-color: #f5f5f5;
+    }}
+    </style>
+    """
+
+    # Construcción de la tabla HTML
+    tabla_html = estilo_tabla + "<table>"
+
+    # Encabezado
+    tabla_html += f"<tr><th>Criterio</th><th>{niveles_a[0]}</th><th>{niveles_b[0]}</th></tr>"
+
+    # Filas de datos
+    for i in range(len(index)):
+        if i == 0:
+            # Formatear los valores de costo con separador de miles y signo $
             niv_a = f"${niveles_a[i+1]:,}".replace(",", ".")
             niv_b = f"${niveles_b[i+1]:,}".replace(",", ".")
         else:
