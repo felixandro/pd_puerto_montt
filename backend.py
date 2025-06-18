@@ -72,7 +72,7 @@ def perfil_eleccion(niveles_a, niveles_b):
     st.markdown(tabla_html, unsafe_allow_html=True)
 
 
-def texto_con_fondo(texto, upper_margin="2rem"):
+def texto_con_fondo(texto, upper_margin="1rem"):
     bg_color="rgba(255, 255, 255, 0.95)"
     padding="0.8rem"
     font_size="18px"
