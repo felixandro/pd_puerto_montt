@@ -171,7 +171,7 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
 
         Tenga en cuenta que el costo, tiempo de viaje, espera y caminata irán cambiando, por lo que tómese su tiempo para analizar antes de contestar.
 
-        Por último, se deja en claro que la encuesta es completamente **anónima** """)
+        Por último, se deja en claro que la encuesta es completamente **anónima**""")
     
     texto_con_fondo(texto_introductorio, upper_margin="1rem")
 
