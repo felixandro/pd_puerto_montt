@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from backend import agregar_imagen_fondo, perfil_eleccion, texto_con_fondo, guardar_respuestas, guardar_ingresos, definir_nro_disenho
+from backend import agregar_imagen_fondo, perfil_eleccion, texto_con_fondo, guardar_respuestas, guardar_ingresos, definir_nro_disenho, generar_encuestadores_dict, generar_tiempos_dict
 from random import choice
 import json
 import time
@@ -38,6 +38,13 @@ if "alt_A" not in st.session_state:
 if "elecciones_dict" not in st.session_state:
     st.session_state.elecciones_dict = {}
 
+if "encuestadores_dict" not in st.session_state:
+    encuestadores_df = pd.read_csv("encuestadores.csv", sep =";")
+    st.session_state.encuestadores_dict = generar_encuestadores_dict(encuestadores_df)
+
+if "horas_list" not in st.session_state:
+    st.session_state.horas_list = []
+
 #nro_disenho = st.session_state.nro_disenho
 
 
@@ -52,35 +59,39 @@ agregar_imagen_fondo(background_url)
 # Identificación del Encuestador
 
 if not st.session_state.id_encuestador:
-    texto_con_fondo("ID Encuestador", upper_margin=0)
-
-    id_encuestador = st.text_input(
-        "",
-        placeholder="ID del Encuestador"
-    )
-
+    
     texto_con_fondo("Lugar de Encuesta", upper_margin=0)
 
     lugar = st.selectbox(
         "",
-        ["", "Centro", "Manuel Montt", "Mirasol", "Alerce"]
+        [""] + list(st.session_state.encuestadores_dict.keys())
     )
 
-    if id_encuestador != "" and lugar != "":
-        next_button_0 = st.button("Siguiente", use_container_width=True)
-        
-        if next_button_0:
-            st.session_state.id_encuestador = True
-            st.session_state.id_encuestador_valor = id_encuestador
-            st.session_state.lugar = lugar
-            st.rerun()
+    if lugar != "":
+
+        texto_con_fondo("Encuestador", upper_margin=0)
+
+        id_encuestador = st.selectbox(
+            "",
+            [""] + st.session_state.encuestadores_dict[lugar]
+        )
+
+        if id_encuestador != "" :
+            next_button_0 = st.button("Siguiente", use_container_width=True)
+            
+            if next_button_0:
+                st.session_state.id_encuestador = True
+                st.session_state.id_encuestador_valor = id_encuestador
+                st.session_state.lugar = lugar
+                st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
+                st.rerun()
 
 
 # Características del Encuestado
 
 if st.session_state.id_encuestador and not st.session_state.caracteristicas:
 
-    texto_con_fondo(f"ID Encuestador: {st.session_state.id_encuestador_valor}", 
+    texto_con_fondo(f"Encuestador: {st.session_state.id_encuestador_valor}", 
                     upper_margin="1rem",
                     bg_color="rgba(10, 20, 176, 0.95)",
                     text_color="#FFFFFF")
@@ -132,7 +143,7 @@ if st.session_state.id_encuestador and not st.session_state.caracteristicas:
         ["", "Trabajo", "Estudio", "Otro"]
     )
 
-    if modo_par != "" and genero != "" and edad != "" and proposito != "":
+    if modo_par != "" and genero != "" and edad  and proposito != "":
 
         next_button_1 = st.button("Siguiente", use_container_width=True)
         
@@ -143,6 +154,7 @@ if st.session_state.id_encuestador and not st.session_state.caracteristicas:
             st.session_state.edad = edad
             st.session_state.proposito = proposito
             st.session_state.nro_disenho = definir_nro_disenho(st.session_state.lugar, st.session_state.modo_par)
+            st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
             st.rerun()
 
 # Texto introductorio
@@ -171,10 +183,11 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
     
     texto_con_fondo(texto_introductorio, upper_margin="1rem")
 
-    next_button_4 = st.button("Siguiente", use_container_width=True)
-    if next_button_4:
+    next_button_2 = st.button("Siguiente", use_container_width=True)
+    if next_button_2:
         st.session_state.texto_introductorio = True
         st.session_state.hora_id = time.strftime("%Y-%m-%d %H:%M:%S")
+        st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
         st.rerun()
 
 # Perfiles de Elección
@@ -207,9 +220,9 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
         st.session_state.elecciones_dict[st.session_state.nro_tarjeta] = altB_label
 
     if  st.session_state.nro_tarjeta in st.session_state.elecciones_dict:
-        button_next = st.button("Siguiente", use_container_width=True)
+        next_button_3 = st.button("Siguiente", use_container_width=True)
         
-        if button_next:
+        if next_button_3:
             st.session_state.lista_tarjetas.remove( st.session_state.nro_tarjeta)
             hora_actual = time.strftime("%Y-%m-%d %H:%M:%S")
             respuesta = {
@@ -236,6 +249,7 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
                         "choice": st.session_state.elecciones_dict[st.session_state.nro_tarjeta],
                         "fecha": hora_actual
                     }
+            st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
 
             guardar_respuestas(respuesta)
 
@@ -286,12 +300,16 @@ if st.session_state.perfiles and not st.session_state.ingreso:
     )
 
     if veh_hogar != "" and ing_familiar != "":
-        next_button_2 = st.button("Finalizar Encuesta", use_container_width=True)
+        next_button_4 = st.button("Finalizar Encuesta", use_container_width=True)
         
-        if next_button_2:
+        if next_button_4:
             st.session_state.ingreso = True
             st.session_state.veh_hogar = veh_hogar
             st.session_state.ing_familiar = ing_familiar
+            st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
+
+            assert len(st.session_state.horas_list) == 8
+
             ingresos_respuesta = {
                 "id_encuestador": st.session_state.id_encuestador_valor,
                 "lugar": st.session_state.lugar,
@@ -302,7 +320,12 @@ if st.session_state.perfiles and not st.session_state.ingreso:
                 "veh_hogar": veh_hogar,
                 "ingreso": ing_familiar
             }
-            guardar_ingresos(ingresos_respuesta)
+
+            tiempos_respuesta = generar_tiempos_dict(st.session_state.horas_list)
+
+            total_dict = ingresos_respuesta | tiempos_respuesta
+
+            guardar_ingresos(total_dict)
             st.rerun()
 
 
@@ -314,10 +337,17 @@ if st.session_state.ingreso:
     if new_survey_button:
         id_encuestador = st.session_state.id_encuestador_valor
         lugar = st.session_state.lugar
+
+        
+
         st.session_state.clear()
         st.session_state.id_encuestador = True
         st.session_state.id_encuestador_valor = id_encuestador
         st.session_state.lugar = lugar
+        
+        st.session_state.horas_list = []
+        st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
+
 
     #st.write("Tus respuestas han sido guardadas exitosamente.")
     

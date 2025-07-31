@@ -1,6 +1,40 @@
 import streamlit as st
-from supabase import create_client
-from datetime import datetime
+from supabase import create_client, Client
+import pandas as pd
+
+
+
+def cargar_bbdd(table_name, start_date, end_date):
+    # Configura tus credenciales de Supabase
+    url = "https://gkgxipnjsoxgqsaukhtg.supabase.co"
+    key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZ3hpcG5qc294Z3FzYXVraHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMTI1NjEsImV4cCI6MjA2NTY4ODU2MX0.TNyYDvpLhBX-Ocr03jzdo9GulXYfYMmOh0Vx20hlJfg"
+
+    # Crea el cliente
+    supabase: Client = create_client(url, key)
+
+    all_data = []
+    page_size = 1000
+    offset = 0
+
+    while True:
+        response = (
+            supabase.table(table_name)
+            .select('*')
+            .gte("hora_id", start_date)
+            .lte("hora_id", end_date)
+            .range(offset, offset + page_size - 1)
+            .execute()
+        )
+        batch = response.data
+        if not batch:
+            break
+        all_data.extend(batch)
+        offset += page_size
+
+        df = pd.DataFrame(all_data)
+
+    return df
+
 
 def agregar_imagen_fondo(url):
     """
@@ -256,34 +290,3 @@ def guardar_ingresos(ingresos):
     supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
     response = supabase.table("ingresos").insert(ingresos).execute()
-
-def generar_encuestadores_dict(encuestadores_df):
-    encuestadores_dict = {}
-    for index, row in encuestadores_df.iterrows():
-        encuestador = row['Encuestador']
-        lugar = row['Lugar']
-        if lugar not in encuestadores_dict:
-            encuestadores_dict[lugar] = []
-        encuestadores_dict[lugar].append(encuestador)
-    return encuestadores_dict
-
-def generar_tiempos_dict(horas_list):
-
-    tiempos_dict = {}
-    t_labels = ["t_caract", "t_intro", "t_pd1", "t_pd2", "t_pd3", "t_pd4", "t_ing"]
-
-    for i, hora in enumerate(horas_list[:-1]):
-        
-        next_hora = horas_list[i + 1]
-
-        datetime_hora = datetime.strptime(hora, "%Y-%m-%d %H:%M:%S")
-        datetime_next_hora = datetime.strptime(next_hora, "%Y-%m-%d %H:%M:%S")
-
-        diferencia = datetime_next_hora - datetime_hora
-        segundos = int(diferencia.total_seconds())
-
-        assert segundos >= 0, f"Error: La diferencia de tiempo entre {hora} y {next_hora} es negativa."
-
-        tiempos_dict[t_labels[i]] = segundos
-
-    return tiempos_dict
