@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from backend import agregar_imagen_fondo, perfil_eleccion, texto_con_fondo, guardar_respuestas, guardar_ingresos, definir_nro_disenho, generar_encuestadores_dict, generar_tiempos_dict
+from backend import agregar_imagen_fondo, perfil_eleccion, texto_con_fondo, guardar_respuestas, guardar_ingresos, definir_nro_disenho
 from random import choice
 import json
 import time
