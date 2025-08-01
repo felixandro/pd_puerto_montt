@@ -318,7 +318,8 @@ if st.session_state.perfiles and not st.session_state.ingreso:
                 "edad": st.session_state.edad,
                 "proposito": st.session_state.proposito,
                 "veh_hogar": veh_hogar,
-                "ingreso": ing_familiar
+                "ingreso": ing_familiar,
+                "nro_dis" : st.session_state.nro_disenho
             }
 
             tiempos_respuesta = generar_tiempos_dict(st.session_state.horas_list)
