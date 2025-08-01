@@ -96,10 +96,13 @@ if lugar != "":
 
     if id_encuestador != "":
 
-        ingresos_df_filtered = ingresos_df[ingresos_df["id_encuestador"] == id_encuestador].sort_values(by="hora_id", ascending=True)
-
-        conteo_df_filtered = generar_resumen_encuestas_val(ingresos_df_filtered)
-        st.dataframe(conteo_df_filtered)    
+        try: 
+            ingresos_df_filtered = ingresos_df[ingresos_df["id_encuestador"] == id_encuestador].sort_values(by="hora_id", ascending=True)
+            conteo_df_filtered = generar_resumen_encuestas_val(ingresos_df_filtered)
+            st.dataframe(conteo_df_filtered)    
+        except Exception as e:
+            st.error(f"No se tienen encuestas para el encuestador {id_encuestador} en el rango temporal señalado")
+            st.stop()
 
         ingresos_df_filtered["dia"] = pd.to_datetime(ingresos_df_filtered["hora_id"]).dt.strftime("%d/%m")
         ingresos_df_filtered["hora"] = pd.to_datetime(ingresos_df_filtered["hora_id"]).dt.strftime("%H:%M:%S")
