@@ -96,13 +96,14 @@ if lugar != "":
 
     if id_encuestador != "":
 
-        try: 
-            ingresos_df_filtered = ingresos_df[ingresos_df["id_encuestador"] == id_encuestador].sort_values(by="hora_id", ascending=True)
-            conteo_df_filtered = generar_resumen_encuestas_val(ingresos_df_filtered)
-            st.dataframe(conteo_df_filtered)    
-        except Exception as e:
+        ingresos_df_filtered = ingresos_df[ingresos_df["id_encuestador"] == id_encuestador].sort_values(by="hora_id", ascending=True)
+        conteo_df_filtered = generar_resumen_encuestas_val(ingresos_df_filtered,"id_encuestador")
+        
+        if conteo_df_filtered.empty:
             st.error(f"No se tienen encuestas para el encuestador {id_encuestador} en el rango temporal señalado")
             st.stop()
+
+        
 
         ingresos_df_filtered["dia"] = pd.to_datetime(ingresos_df_filtered["hora_id"]).dt.strftime("%d/%m")
         ingresos_df_filtered["hora"] = pd.to_datetime(ingresos_df_filtered["hora_id"]).dt.strftime("%H:%M:%S")
@@ -118,12 +119,24 @@ if lugar != "":
         df = ingresos_df_filtered[["dia", "hora", "genero", "edad", "proposito", "veh_hogar", "ingreso"] + list(t_cols.keys())]
         
         st.subheader("Encuestas Realizadas")
-        df
+        
+        st.dataframe(df)
+
+        st.subheader("Resumen")
+        st.dataframe(conteo_df_filtered,
+                     hide_index=True,
+                     column_config={"Porcentaje": st.column_config.ProgressColumn(
+                         "Porcentaje",
+                         format="%d%%"
+                     )})
 
         st.subheader("Graficos de Tiempos de Respuesta")
 
         df['hora'] = pd.to_datetime(df['hora']) - pd.Timedelta(hours=4)
 
+
+        # Controlar dimensiones de los gráficos
+        plt.rcParams["figure.figsize"] = (8, 3)  # ancho x alto en pulgadas
         for t_col, label_col in t_cols.items():
             fig, ax = plt.subplots()
             ax.plot(df["hora"], df[t_col], marker='o')
