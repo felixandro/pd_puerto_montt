@@ -1,6 +1,7 @@
 import streamlit as st
 from supabase import create_client, Client
 import pandas as pd
+import json
 
 
 
@@ -34,3 +35,47 @@ def cargar_bbdd(table_name, start_date, end_date):
         df = pd.DataFrame(all_data)
 
     return df
+
+def generar_resumen_encuestas_val(df, groupby_col):
+    conteo_df = df.groupby(groupby_col).agg(
+        suma_val=('val', 'sum'),
+        conteo=('val', 'count')
+    ).reset_index()
+
+    conteo_df["Porcentaje"] = (conteo_df["suma_val"] / conteo_df["conteo"]) * 100
+
+    conteo_df.rename(columns={'id_encuestador': 'Encuestador', 
+                              'nro_dis': 'Diseño', 
+                              'conteo': 'Total Encuestas', 
+                              'suma_val': 'Encuestas Válidas'}, 
+                              inplace=True)
+
+    return conteo_df
+
+def generar_encuestas_val_xdisenho(df):
+
+    filas = []
+    for i in range(1, 11):
+        json_path = f"Disenhos/disenho_{i}.json"
+        with open(json_path, "r", encoding="utf-8") as f:
+            datos_json = json.load(f)
+        nro_dis = datos_json["nro_disenho"]
+        sector = datos_json["par"]
+        modo_1 = datos_json["alt1"]
+        modo_2 = datos_json["alt2"]
+        enc_val = df[df["nro_dis"] == nro_dis]["val"].sum()
+        enc_total = df[df["nro_dis"] == nro_dis].shape[0]
+        filas.append({
+            "Diseño": nro_dis,
+            "Par": sector + " - Centro",
+            "Modo 1": modo_1,
+            "Modo 2": modo_2,
+            "Val": enc_val,
+            "Total": enc_total,
+            "Porcentaje": (enc_val / enc_total) * 100 if enc_total > 0 else 0
+        })
+
+    df = pd.DataFrame(filas)
+
+    return df
+
