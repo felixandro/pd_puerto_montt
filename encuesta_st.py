@@ -152,7 +152,6 @@ if st.session_state.id_encuestador and not st.session_state.caracteristicas:
             st.session_state.nro_disenho = be.definir_nro_disenho(st.session_state.lugar, st.session_state.modo_par)
             st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
             st.session_state.nro_bloque = 1 if random() < 0.5 else 2
-            print( f"Bloque seleccionado: {st.session_state.nro_bloque}")
             st.session_state.lista_tarjetas = be.definir_lista_tarjetas(st.session_state.nro_disenho, st.session_state.nro_bloque)
             st.session_state.nro_tarjeta = choice(st.session_state.lista_tarjetas)
             st.session_state.orden_tarjetas = [st.session_state.nro_tarjeta]
