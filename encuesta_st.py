@@ -172,16 +172,28 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
     altA_label = data[f"alt{st.session_state.alt_A}"]
     altB_label = data[f"alt{st.session_state.alt_B}"]
     
-    texto_introductorio = textwrap.dedent(f"""        
-        A continuación, le propondremos una serie de situaciones hipotéticas de elección entre dos modos de transporte para realizar el mismo viaje que está haciendo hoy (Desde {origen} al Centro), para lo cual podrá elegir entre **{altA_label}** y **{altB_label}**
+    texto_introductorio1 = textwrap.dedent(f"""
+        El objetivo de esta encuesta es conocer sus preferencias respecto al medio de transporte que usaría ante una eventual construcción de un teleférico en Puerto Montt.
 
-        Cada alternativa será definida por el costo monetario y los tiempos de viaje, espera y caminata que implicaría. Para cada escenario le pedimos que indique cuál de las dos opciones elegiría si ambas estuvieran disponibles.
+        Para esto suponga un viaje desde **{origen}** al **Centro de Puerto Montt** (idéntico al que está realizando hoy) y que sus opciones son **{altA_label}** y **{altB_label}**.
 
-        Sabemos que en una ciudad con desniveles pronunciados, sectores densamente poblados en altura y frecuentes problemas de congestión, es importante explorar nuevas formas de transporte. Sin embargo, queremos enfatizar que su elección no debe verse influida por si usted cree que el teleférico va o no a construirse. Lo más importante es que elija la alternativa que realmente refleje su preferencia personal, tal como si tuviera que tomar esa decisión en la vida real.
-
-        Favor analice cada escenario con detención y tenga presente que no hay respuestas correctas o incorrectas.""")
+        Se le presentarán 5 escenarios distintos, donde las alternativas serán caracterizadas mediante su **costo** monetario y los **tiempos** que implicarían cada etapa del viaje. **(Mostrar ejemplo a continuación)**""")
     
-    texto_con_fondo(texto_introductorio, upper_margin="1rem")
+    texto_introductorio2 = textwrap.dedent(f"""
+        Es crucial que **analice detenidamente** cada escenario, **compare** ambas alternativas y seleccione aquella que elegiría en un **contexto real**.
+                                           
+        Queremos enfatizar que su elección **no debe verse influida** por si usted cree que el teleférico va o no a construirse. 
+                                           
+        Por último, se deja claro que la encuesta es totalmente **anónima** y que **no hay respuestas correctas o incorrectas**.""")
+
+
+    texto_con_fondo(texto_introductorio1, upper_margin="1rem")
+
+    niveles_a_ejemplo = ["Alternativa 1", 2000, 15, 5, 8, 1]
+    niveles_b_ejemplo = ["Alternativa 2", 2500, 10, 10, 6, 0]
+    perfil_eleccion(niveles_a_ejemplo, niveles_b_ejemplo)
+    texto_con_fondo(texto_introductorio2, upper_margin="1rem")
+
 
     next_button_2 = st.button("Siguiente", use_container_width=True)
     if next_button_2:

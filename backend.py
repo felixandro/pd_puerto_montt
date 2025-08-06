@@ -135,7 +135,9 @@ def perfil_eleccion(niveles_a, niveles_b):
         "Taxibus": "🚌",
         "Tren": "🚆",
         "Taxibus - Teleférico": "🚌🚡",
-        "Taxibus - Tren - Taxibus": "🚌🚆🚌"
+        "Taxibus - Tren - Taxibus": "🚌🚆🚌",
+        "Alternativa 1": "",
+        "Alternativa 2": ""
     }
 
     # Fila encabezado como primera fila con <td>
