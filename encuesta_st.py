@@ -45,9 +45,6 @@ if "encuestadores_dict" not in st.session_state:
 if "horas_list" not in st.session_state:
     st.session_state.horas_list = []
 
-#nro_disenho = st.session_state.nro_disenho
-
-
 st.set_page_config(layout="centered")
 
 # Imagen de fondo
