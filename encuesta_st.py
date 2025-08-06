@@ -299,7 +299,7 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
     #st.write("Tus elecciones hasta ahora:")
     #st.write(st.session_state.elecciones_dict)
     #st.write("Orden de tarjetas seleccionadas:")
-    #st.write(st.session_state.orden_tarjetas)
+    #dst.write(st.session_state.orden_tarjetas)
 
 if st.session_state.perfiles and not st.session_state.ingreso:
 
