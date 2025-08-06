@@ -52,7 +52,6 @@ st.set_page_config(layout="centered")
 
 # Imagen de fondo
 
-#background_url = "https://storage.googleapis.com/chile-travel-cdn/2021/07/puerto-montt_prin-min.jpg"
 background_url = "https://raw.githubusercontent.com/felixandro/pd_puerto_montt/refs/heads/master/figura_fondo.png"
 be.agregar_imagen_fondo(background_url)
 
