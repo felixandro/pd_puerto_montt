@@ -288,15 +288,6 @@ def generar_tiempos_dict(horas_list):
     return tiempos_dict
 
 def definir_lista_tarjetas(nro_disenho, nro_bloque):
-    """
-    Define la lista de tarjetas según el número de diseño.
-    
-    Args:
-        nro_disenho (int): Número de diseño.
-    
-    Returns:
-        list: Lista de tarjetas.
-    """
 
     with open(f'Disenhos/disenho_{nro_disenho}.json', 'r', encoding='utf-8') as f:
         data = json.load(f)
