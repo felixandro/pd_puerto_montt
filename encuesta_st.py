@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
-from backend import agregar_imagen_fondo, perfil_eleccion, texto_con_fondo, guardar_respuestas, guardar_ingresos, definir_nro_disenho, generar_encuestadores_dict, generar_tiempos_dict
-from random import choice
+import backend as be
+from random import choice, random
 import json
 import time
 import textwrap
@@ -24,10 +24,10 @@ if "perfiles" not in st.session_state:
 if "ingreso" not in st.session_state:
     st.session_state.ingreso = False
 
-if "lista_tarjetas" not in st.session_state:
-    st.session_state.lista_tarjetas = list(range(1,9))
-    st.session_state.nro_tarjeta = choice(st.session_state.lista_tarjetas)
-    st.session_state.orden_tarjetas = [st.session_state.nro_tarjeta]
+#if "lista_tarjetas" not in st.session_state:
+#    st.session_state.lista_tarjetas = list(range(1,9))
+#    st.session_state.nro_tarjeta = choice(st.session_state.lista_tarjetas)
+#    st.session_state.orden_tarjetas = [st.session_state.nro_tarjeta]
 
 if "alt_A" not in st.session_state:
     alternativas = [1, 2]
@@ -40,7 +40,7 @@ if "elecciones_dict" not in st.session_state:
 
 if "encuestadores_dict" not in st.session_state:
     encuestadores_df = pd.read_csv("encuestadores.csv", sep =";")
-    st.session_state.encuestadores_dict = generar_encuestadores_dict(encuestadores_df)
+    st.session_state.encuestadores_dict = be.generar_encuestadores_dict(encuestadores_df)
 
 if "horas_list" not in st.session_state:
     st.session_state.horas_list = []
@@ -54,13 +54,13 @@ st.set_page_config(layout="centered")
 
 #background_url = "https://storage.googleapis.com/chile-travel-cdn/2021/07/puerto-montt_prin-min.jpg"
 background_url = "https://raw.githubusercontent.com/felixandro/pd_puerto_montt/refs/heads/master/figura_fondo.png"
-agregar_imagen_fondo(background_url)
+be.agregar_imagen_fondo(background_url)
 
 # Identificación del Encuestador
 
 if not st.session_state.id_encuestador:
-    
-    texto_con_fondo("Lugar de Encuesta", upper_margin=0)
+
+    be.texto_con_fondo("Lugar de Encuesta", upper_margin=0)
 
     lugar = st.selectbox(
         "",
@@ -69,7 +69,7 @@ if not st.session_state.id_encuestador:
 
     if lugar != "":
 
-        texto_con_fondo("Encuestador", upper_margin=0)
+        be.texto_con_fondo("Encuestador", upper_margin=0)
 
         id_encuestador = st.selectbox(
             "",
@@ -91,25 +91,25 @@ if not st.session_state.id_encuestador:
 
 if st.session_state.id_encuestador and not st.session_state.caracteristicas:
 
-    texto_con_fondo(f"Encuestador: {st.session_state.id_encuestador_valor}", 
+    be.texto_con_fondo(f"Encuestador: {st.session_state.id_encuestador_valor}", 
                     upper_margin="1rem",
                     bg_color="rgba(10, 20, 176, 0.95)",
                     text_color="#FFFFFF")
-    texto_con_fondo(f"Lugar de Encuesta: {st.session_state.lugar}", 
+    be.texto_con_fondo(f"Lugar de Encuesta: {st.session_state.lugar}", 
                     upper_margin="1rem",
                     bg_color="rgba(10, 20, 176, 0.95)",
                     text_color="#FFFFFF")
 
     if st.session_state.lugar == "Centro":
-        texto_con_fondo("Par OD", upper_margin=0)
+        be.texto_con_fondo("Par OD", upper_margin=0)
 
         modo_par = st.selectbox("",
                                 ["", "Manuel Montt - Centro", "Mirasol - Centro", "Alerce - Centro"])
 
     else:
 
-        texto_con_fondo("Modo", upper_margin=0)
-        
+        be.texto_con_fondo("Modo", upper_margin=0)
+
         if st.session_state.lugar == "Alerce":
             modos_list = ["", "Taxibus", "Taxi Colectivo", "Tren"]
 
@@ -119,14 +119,14 @@ if st.session_state.id_encuestador and not st.session_state.caracteristicas:
         modo_par = st.selectbox("",
                                 modos_list)
 
-    texto_con_fondo("Género", upper_margin=0)
+    be.texto_con_fondo("Género", upper_margin=0)
 
     genero = st.selectbox(
         "",
         ["", "Femenino", "Masculino", "No Responde"]
     )
 
-    texto_con_fondo("Edad", upper_margin=0)
+    be.texto_con_fondo("Edad", upper_margin=0)
 
     edad = st.number_input(
         "",
@@ -136,7 +136,7 @@ if st.session_state.id_encuestador and not st.session_state.caracteristicas:
         step=1
     )
 
-    texto_con_fondo("¿Cuál es el propósito de su viaje?", upper_margin=0)
+    be.texto_con_fondo("¿Cuál es el propósito de su viaje?", upper_margin=0)
 
     proposito = st.selectbox(
         "",
@@ -153,8 +153,13 @@ if st.session_state.id_encuestador and not st.session_state.caracteristicas:
             st.session_state.genero = genero
             st.session_state.edad = edad
             st.session_state.proposito = proposito
-            st.session_state.nro_disenho = definir_nro_disenho(st.session_state.lugar, st.session_state.modo_par)
+            st.session_state.nro_disenho = be.definir_nro_disenho(st.session_state.lugar, st.session_state.modo_par)
             st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
+            st.session_state.nro_bloque = 1 if random() < 0.5 else 2
+            print( f"Bloque seleccionado: {st.session_state.nro_bloque}")
+            st.session_state.lista_tarjetas = be.definir_lista_tarjetas(st.session_state.nro_disenho, st.session_state.nro_bloque)
+            st.session_state.nro_tarjeta = choice(st.session_state.lista_tarjetas)
+            st.session_state.orden_tarjetas = [st.session_state.nro_tarjeta]
             st.rerun()
 
 # Texto introductorio
@@ -187,12 +192,15 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
         Por último, se deja claro que la encuesta es totalmente **anónima** y que **no hay respuestas correctas o incorrectas**.""")
 
 
-    texto_con_fondo(texto_introductorio1, upper_margin="1rem")
+    be.texto_con_fondo(texto_introductorio1, upper_margin="1rem")
 
-    niveles_a_ejemplo = ["Alternativa 1", 2000, 15, 5, 8, 1]
-    niveles_b_ejemplo = ["Alternativa 2", 2500, 10, 10, 6, 0]
-    perfil_eleccion(niveles_a_ejemplo, niveles_b_ejemplo)
-    texto_con_fondo(texto_introductorio2, upper_margin="1rem")
+    altA_label = data[f"alt{st.session_state.alt_A}"]
+    altB_label = data[f"alt{st.session_state.alt_B}"]
+
+    niveles_a_ejemplo = [altA_label, 2000, 15, 5, 8, 1]
+    niveles_b_ejemplo = [altB_label, 2500, 10, 10, 6, 0]
+    be.perfil_eleccion(niveles_a_ejemplo, niveles_b_ejemplo)
+    be.texto_con_fondo(texto_introductorio2, upper_margin="1rem")
 
 
     next_button_2 = st.button("Siguiente", use_container_width=True)
@@ -213,22 +221,21 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
     altA_label = data[f"alt{st.session_state.alt_A}"]
     altB_label = data[f"alt{st.session_state.alt_B}"]
 
-
-    texto_con_fondo(f"Pregunta {len(st.session_state.orden_tarjetas)} - ¿Cuál alternativa elegiría?", upper_margin=0)
+    be.texto_con_fondo(f"Pregunta {len(st.session_state.orden_tarjetas)} - ¿Cuál alternativa elegiría?", upper_margin=0)
 
     niveles_a = [altA_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_A}"] + [int(len(altA_label.split("-"))-1)]
     niveles_b = [altB_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"] + [int(len(altB_label.split("-"))-1)]
-    perfil_eleccion(niveles_a, niveles_b)
+    be.perfil_eleccion(niveles_a, niveles_b)
 
     button_a = st.button(altA_label, use_container_width= True)
     button_b = st.button(altB_label, use_container_width= True)
 
     if button_a:
-        texto_con_fondo(f"Seleccionó {altA_label}")
+        be.texto_con_fondo(f"Seleccionó {altA_label}")
         st.session_state.elecciones_dict[st.session_state.nro_tarjeta] = altA_label
         
     if button_b:
-        texto_con_fondo(f"Seleccionó {altB_label}")
+        be.texto_con_fondo(f"Seleccionó {altB_label}")
         st.session_state.elecciones_dict[st.session_state.nro_tarjeta] = altB_label
 
     if  st.session_state.nro_tarjeta in st.session_state.elecciones_dict:
@@ -259,13 +266,23 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
                         "tc_a2": data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"][3],
                         "tr_a2": int(len(altB_label.split("-"))-1),
                         "choice": st.session_state.elecciones_dict[st.session_state.nro_tarjeta],
-                        "fecha": hora_actual
+                        "fecha": hora_actual,
+                        "bloque": st.session_state.nro_bloque,
+                        "id_respuesta": be.generar_id_respuesta(
+                            hora_id=st.session_state.hora_id,
+                            nro_disenho=st.session_state.nro_disenho,
+                            nro_tarjeta=st.session_state.nro_tarjeta,
+                            id_encuestador=st.session_state.id_encuestador_valor,
+                            edad=st.session_state.edad,
+                            genero=st.session_state.genero,
+                            proposito=st.session_state.proposito
+                        )
                     }
             st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
 
-            guardar_respuestas(respuesta)
+            be.guardar_respuestas(respuesta)
 
-            if len(st.session_state.elecciones_dict) <= 3:
+            if len(st.session_state.elecciones_dict) <= 4:
                 st.session_state.nro_tarjeta = choice(st.session_state.lista_tarjetas)
                 st.session_state.orden_tarjetas.append(st.session_state.nro_tarjeta)
                 st.rerun()
@@ -285,15 +302,15 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
     #st.write(st.session_state.orden_tarjetas)
 
 if st.session_state.perfiles and not st.session_state.ingreso:
-    
-    texto_con_fondo("¿Cuántos vehículos posee en el hogar?", upper_margin=0)
+
+    be.texto_con_fondo("¿Cuántos vehículos posee en el hogar?", upper_margin=0)
 
     veh_hogar = st.selectbox(
         "",
         ["", "0", "1", "2 o más"]
     )
 
-    texto_con_fondo("¿En qué rango se encuentra su ingreso familiar mensual?", upper_margin=0)
+    be.texto_con_fondo("¿En qué rango se encuentra su ingreso familiar mensual?", upper_margin=0)
 
     ing_familiar = st.selectbox(
         "",
@@ -320,7 +337,7 @@ if st.session_state.perfiles and not st.session_state.ingreso:
             st.session_state.ing_familiar = ing_familiar
             st.session_state.horas_list.append(time.strftime("%Y-%m-%d %H:%M:%S"))
 
-            assert len(st.session_state.horas_list) == 8
+            assert len(st.session_state.horas_list) == 9
 
             ingresos_respuesta = {
                 "id_encuestador": st.session_state.id_encuestador_valor,
@@ -331,27 +348,34 @@ if st.session_state.perfiles and not st.session_state.ingreso:
                 "proposito": st.session_state.proposito,
                 "veh_hogar": veh_hogar,
                 "ingreso": ing_familiar,
-                "nro_dis" : st.session_state.nro_disenho
+                "nro_dis" : st.session_state.nro_disenho,
+                "bloque": st.session_state.nro_bloque,
+                "id_encuesta": be.generar_id_encuesta(
+                    hora_id=st.session_state.hora_id,
+                    nro_disenho=st.session_state.nro_disenho,
+                    id_encuestador=st.session_state.id_encuestador_valor,
+                    edad=st.session_state.edad,
+                    genero=st.session_state.genero,
+                    proposito=st.session_state.proposito
+                )
             }
 
-            tiempos_respuesta = generar_tiempos_dict(st.session_state.horas_list)
+            tiempos_respuesta = be.generar_tiempos_dict(st.session_state.horas_list)
 
             total_dict = ingresos_respuesta | tiempos_respuesta
 
-            guardar_ingresos(total_dict)
+            be.guardar_ingresos(total_dict)
             st.rerun()
 
 
 if st.session_state.ingreso:
-    texto_con_fondo("¡Encuesta Finalizada!", upper_margin="1rem")
+    be.texto_con_fondo("¡Encuesta Finalizada!", upper_margin="1rem")
 
     new_survey_button = st.button("Nueva Encuesta", use_container_width=True)
 
     if new_survey_button:
         id_encuestador = st.session_state.id_encuestador_valor
         lugar = st.session_state.lugar
-
-        
 
         st.session_state.clear()
         st.session_state.id_encuestador = True

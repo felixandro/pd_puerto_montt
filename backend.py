@@ -1,6 +1,7 @@
 import streamlit as st
 from supabase import create_client
 from datetime import datetime
+import json
 
 def agregar_imagen_fondo(url):
     """
@@ -171,8 +172,6 @@ def perfil_eleccion(niveles_a, niveles_b):
     # Mostrar en Streamlit
     st.markdown(tabla_html, unsafe_allow_html=True)
 
-
-
 def texto_con_fondo_v0(texto, 
                     upper_margin="1rem", 
                     bg_color="rgba(255, 255, 255, 0.95)",
@@ -229,8 +228,6 @@ def texto_con_fondo(texto,
     </div>
     """, unsafe_allow_html=True)
 
-
-
 def guardar_respuestas(respuestas):
 
     print("Guardando respuestas:", respuestas)
@@ -242,7 +239,7 @@ def guardar_respuestas(respuestas):
 
     print("hola")
 
-    response = supabase.table("bbdd_pd").insert(respuestas).execute()
+    response = supabase.table("bbdd_pd_v2").insert(respuestas).execute()
 
     print("sdadsa")
 
@@ -257,7 +254,7 @@ def guardar_ingresos(ingresos):
     SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZ3hpcG5qc294Z3FzYXVraHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMTI1NjEsImV4cCI6MjA2NTY4ODU2MX0.TNyYDvpLhBX-Ocr03jzdo9GulXYfYMmOh0Vx20hlJfg"
     supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-    response = supabase.table("ingresos").insert(ingresos).execute()
+    response = supabase.table("ingresos_v2").insert(ingresos).execute()
 
 def generar_encuestadores_dict(encuestadores_df):
     encuestadores_dict = {}
@@ -272,7 +269,7 @@ def generar_encuestadores_dict(encuestadores_df):
 def generar_tiempos_dict(horas_list):
 
     tiempos_dict = {}
-    t_labels = ["t_caract", "t_intro", "t_pd1", "t_pd2", "t_pd3", "t_pd4", "t_ing"]
+    t_labels = ["t_caract", "t_intro", "t_pd1", "t_pd2", "t_pd3", "t_pd4", "t_pd5", "t_ing"]
 
     for i, hora in enumerate(horas_list[:-1]):
         
@@ -289,3 +286,55 @@ def generar_tiempos_dict(horas_list):
         tiempos_dict[t_labels[i]] = segundos
 
     return tiempos_dict
+
+def definir_lista_tarjetas(nro_disenho, nro_bloque):
+    """
+    Define la lista de tarjetas según el número de diseño.
+    
+    Args:
+        nro_disenho (int): Número de diseño.
+    
+    Returns:
+        list: Lista de tarjetas.
+    """
+
+    with open(f'Disenhos/disenho_{nro_disenho}.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    lista_tarjetas = []
+
+    for i in range(1,len(data)-3):
+        bloque = data[f"T{i}"]["Bloque"]
+        if bloque == nro_bloque or bloque == 0:
+            lista_tarjetas.append(i)
+
+    return lista_tarjetas
+
+def generar_id_respuesta(hora_id, nro_disenho, nro_tarjeta, id_encuestador, edad, genero, proposito):
+
+    # Extraer componentes de fecha y hora de hora_id
+    dt = datetime.strptime(hora_id[:19], "%Y-%m-%d %H:%M:%S")
+    hora_id_fmt = f"{dt.month:02d}{dt.day:02d}{dt.hour:02d}{dt.minute:02d}{dt.second:02d}"
+
+    # Formatear nro_disenho
+    nro_disenho_fmt = f"{nro_disenho:02d}"
+
+    # Formatear id_encuestador: tomar las dos primeras letras de cada palabra
+    id_encuestador_fmt = ''.join([w[:3] for w in id_encuestador.split()])
+
+    return f"{hora_id_fmt}_{nro_disenho_fmt}_{nro_tarjeta}_{id_encuestador_fmt}_{edad}_{genero[0]}_{proposito[0]}"
+
+
+def generar_id_encuesta(hora_id, nro_disenho, id_encuestador, edad, genero, proposito):
+
+    # Extraer componentes de fecha y hora de hora_id
+    dt = datetime.strptime(hora_id[:19], "%Y-%m-%d %H:%M:%S")
+    hora_id_fmt = f"{dt.month:02d}{dt.day:02d}{dt.hour:02d}{dt.minute:02d}{dt.second:02d}"
+
+    # Formatear nro_disenho
+    nro_disenho_fmt = f"{nro_disenho:02d}"
+
+    # Formatear id_encuestador: tomar las dos primeras letras de cada palabra
+    id_encuestador_fmt = ''.join([w[:3] for w in id_encuestador.split()])
+
+    return f"{hora_id_fmt}_{nro_disenho_fmt}_{id_encuestador_fmt}_{edad}_{genero[0]}_{proposito[0]}"

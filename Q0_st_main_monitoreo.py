@@ -35,7 +35,7 @@ end_date = (datetime.combine(fecha, hora_fin_local) + timedelta(hours=4)).strfti
 
 # Obtener Datos asociados al rango temporal
 try:
-    ingresos_df = cargar_bbdd("ingresos", start_date, end_date)
+    ingresos_df = cargar_bbdd("ingresos_v2", start_date, end_date)
 except Exception as e:
     st.error(f"No se tienen encuestas para el rango temporal señalado")
     st.stop()
@@ -114,6 +114,7 @@ if lugar != "":
                   "t_pd2": "PD 2", 
                   "t_pd3": "PD 3", 
                   "t_pd4": "PD 4", 
+                  "t_pd5": "PD 5",
                   "t_ing": "Posesión de Vehículo e Ingreso"}
 
         df = ingresos_df_filtered[["dia", "hora", "genero", "edad", "proposito", "veh_hogar", "ingreso"] + list(t_cols.keys())]
