@@ -42,7 +42,7 @@ def generar_resumen_encuestas_val(df, groupby_col):
         conteo=('val', 'count')
     ).reset_index()
 
-    conteo_df["Porcentaje"] = (conteo_df["suma_val"] / conteo_df["conteo"]) * 100
+    conteo_df["Porcentaje"] = (conteo_df["suma_val"] / conteo_df["conteo"])
 
     conteo_df.rename(columns={'id_encuestador': 'Encuestador', 
                               'nro_dis': 'Diseño', 
@@ -72,7 +72,7 @@ def generar_encuestas_val_xdisenho(df):
             "Modo 2": modo_2,
             "Val": enc_val,
             "Total": enc_total,
-            "Porcentaje": (enc_val / enc_total) * 100 if enc_total > 0 else 0
+            "Porcentaje": (enc_val / enc_total)  if enc_total > 0 else 0
         })
 
     df = pd.DataFrame(filas)
