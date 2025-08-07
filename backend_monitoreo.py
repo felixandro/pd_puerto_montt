@@ -79,3 +79,10 @@ def generar_encuestas_val_xdisenho(df):
 
     return df
 
+def generar_encuestadores_list(encuestadores_df):
+    encuestadores_list = []
+    for index, row in encuestadores_df.iterrows():
+        encuestador = row['Encuestador']
+        if encuestador not in encuestadores_list:
+            encuestadores_list.append(encuestador)
+    return encuestadores_list
