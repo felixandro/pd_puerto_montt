@@ -73,7 +73,7 @@ if not st.session_state.id_encuestador:
         )
 
         if id_encuestador != "" :
-            next_button_0 = st.button("Siguiente", use_container_width=True)
+            next_button_0 = st.button("Siguiente", use_container_width=True, type = "primary")
             
             if next_button_0:
                 st.session_state.id_encuestador = True
@@ -141,7 +141,7 @@ if st.session_state.id_encuestador and not st.session_state.caracteristicas:
 
     if modo_par != "" and genero != "" and edad  and proposito != "":
 
-        next_button_1 = st.button("Siguiente", use_container_width=True)
+        next_button_1 = st.button("Siguiente", use_container_width=True, type = "primary")
         
         if next_button_1:
             st.session_state.caracteristicas = True
@@ -198,7 +198,7 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
     be.texto_con_fondo(texto_introductorio2, upper_margin="1rem")
 
 
-    next_button_2 = st.button("Siguiente", use_container_width=True)
+    next_button_2 = st.button("Siguiente", use_container_width=True, type = "primary")
     if next_button_2:
         st.session_state.texto_introductorio = True
         st.session_state.hora_id = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -222,8 +222,8 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
     niveles_b = [altB_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"] + [int(len(altB_label.split("-"))-1)]
     be.perfil_eleccion(niveles_a, niveles_b)
 
-    button_a = st.button(altA_label, use_container_width= True)
-    button_b = st.button(altB_label, use_container_width= True)
+    button_a = st.button(altA_label, use_container_width= True, type = "primary")
+    button_b = st.button(altB_label, use_container_width= True, type = "primary")
 
     if button_a:
         be.texto_con_fondo(f"Seleccionó {altA_label}")
@@ -234,7 +234,7 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
         st.session_state.elecciones_dict[st.session_state.nro_tarjeta] = altB_label
 
     if  st.session_state.nro_tarjeta in st.session_state.elecciones_dict:
-        next_button_3 = st.button("Siguiente", use_container_width=True)
+        next_button_3 = st.button("Siguiente", use_container_width=True, type = "primary")
         
         if next_button_3:
             st.session_state.lista_tarjetas.remove( st.session_state.nro_tarjeta)
@@ -324,7 +324,7 @@ if st.session_state.perfiles and not st.session_state.ingreso:
     )
 
     if veh_hogar != "" and ing_familiar != "":
-        next_button_4 = st.button("Finalizar Encuesta", use_container_width=True)
+        next_button_4 = st.button("Finalizar Encuesta", use_container_width=True, type = "primary")
         
         if next_button_4:
             st.session_state.ingreso = True
@@ -366,7 +366,7 @@ if st.session_state.perfiles and not st.session_state.ingreso:
 if st.session_state.ingreso:
     be.texto_con_fondo("¡Encuesta Finalizada!", upper_margin="1rem")
 
-    new_survey_button = st.button("Nueva Encuesta", use_container_width=True)
+    new_survey_button = st.button("Nueva Encuesta", use_container_width=True, type = "primary")
 
     if new_survey_button:
         id_encuestador = st.session_state.id_encuestador_valor
