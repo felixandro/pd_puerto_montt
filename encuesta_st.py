@@ -222,8 +222,8 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
     niveles_b = [altB_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"] + [int(len(altB_label.split("-"))-1)]
     be.perfil_eleccion(niveles_a, niveles_b)
 
-    button_a = st.button(altA_label, use_container_width= True, type = "primary")
-    button_b = st.button(altB_label, use_container_width= True, type = "primary")
+    button_a = st.button(altA_label, use_container_width= True)
+    button_b = st.button(altB_label, use_container_width= True)
 
     if button_a:
         be.texto_con_fondo(f"Seleccionó {altA_label}")
