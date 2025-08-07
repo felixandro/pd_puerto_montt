@@ -192,8 +192,8 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
     altA_label = data[f"alt{st.session_state.alt_A}"]
     altB_label = data[f"alt{st.session_state.alt_B}"]
 
-    niveles_a_ejemplo = [altA_label, 2000, 15, 5, 8, 1]
-    niveles_b_ejemplo = [altB_label, 2500, 10, 10, 6, 0]
+    niveles_a_ejemplo = [altA_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_A}"] + [int(len(altA_label.split("-"))-1)]
+    niveles_b_ejemplo = [altB_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"] + [int(len(altB_label.split("-"))-1)]
     be.perfil_eleccion(niveles_a_ejemplo, niveles_b_ejemplo)
     be.texto_con_fondo(texto_introductorio2, upper_margin="1rem")
 
