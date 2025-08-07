@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from backend import generar_encuestadores_dict
-from backend_monitoreo import cargar_bbdd, generar_resumen_encuestas_val, generar_encuestas_val_xdisenho
+from backend_monitoreo import cargar_bbdd, generar_resumen_encuestas_val, generar_encuestas_val_xdisenho, generar_encuestadores_list
 from random import choice
 import json
 import time
@@ -15,6 +15,7 @@ import matplotlib.pyplot as plt
 if "encuestadores_dict" not in st.session_state:
     encuestadores_df = pd.read_csv("encuestadores.csv", sep =";")
     st.session_state.encuestadores_dict = generar_encuestadores_dict(encuestadores_df)
+    st.session_state.encuestadores_list = generar_encuestadores_list(encuestadores_df)
 
 #####################################
 ############# Frontend ##############
@@ -82,81 +83,74 @@ st.header("Análisis por Encuestador") #frontend
 
 # Identificación del Encuestador
 
-lugar = st.selectbox(
-    "Lugar de Encuesta",
-    [""] + list(st.session_state.encuestadores_dict.keys())
+id_encuestador = st.selectbox(
+    "Encuestador",
+    [""] + st.session_state.encuestadores_list
 ) #frontend
 
-if lugar != "":
+if id_encuestador != "":
 
-    id_encuestador = st.selectbox(
-        "Encuestador",
-        [""] + st.session_state.encuestadores_dict[lugar]
-    ) #frontend
+    ingresos_df_filtered = ingresos_df[ingresos_df["id_encuestador"] == id_encuestador].sort_values(by="hora_id", ascending=True)
+    conteo_df_filtered = generar_resumen_encuestas_val(ingresos_df_filtered,"id_encuestador")
+    
+    if conteo_df_filtered.empty:
+        st.error(f"No se tienen encuestas para el encuestador {id_encuestador} en el rango temporal señalado")
+        st.stop()
 
-    if id_encuestador != "":
+    
 
-        ingresos_df_filtered = ingresos_df[ingresos_df["id_encuestador"] == id_encuestador].sort_values(by="hora_id", ascending=True)
-        conteo_df_filtered = generar_resumen_encuestas_val(ingresos_df_filtered,"id_encuestador")
-        
-        if conteo_df_filtered.empty:
-            st.error(f"No se tienen encuestas para el encuestador {id_encuestador} en el rango temporal señalado")
-            st.stop()
+    ingresos_df_filtered["dia"] = pd.to_datetime(ingresos_df_filtered["hora_id"]).dt.strftime("%d/%m")
+    ingresos_df_filtered["hora"] = pd.to_datetime(ingresos_df_filtered["hora_id"]).dt.strftime("%H:%M:%S")
 
-        
+    t_cols = {"t_caract": "Características", 
+                "t_intro": "Introducción", 
+                "t_pd1": "PD 1", 
+                "t_pd2": "PD 2", 
+                "t_pd3": "PD 3", 
+                "t_pd4": "PD 4", 
+                "t_pd5": "PD 5",
+                "t_ing": "Posesión de Vehículo e Ingreso"}
 
-        ingresos_df_filtered["dia"] = pd.to_datetime(ingresos_df_filtered["hora_id"]).dt.strftime("%d/%m")
-        ingresos_df_filtered["hora"] = pd.to_datetime(ingresos_df_filtered["hora_id"]).dt.strftime("%H:%M:%S")
+    df = ingresos_df_filtered[["dia", "hora", "genero", "edad", "proposito", "veh_hogar", "ingreso"] + list(t_cols.keys())]
+    
+    st.subheader("Encuestas Realizadas")
+    
+    st.dataframe(df)
 
-        t_cols = {"t_caract": "Características", 
-                  "t_intro": "Introducción", 
-                  "t_pd1": "PD 1", 
-                  "t_pd2": "PD 2", 
-                  "t_pd3": "PD 3", 
-                  "t_pd4": "PD 4", 
-                  "t_pd5": "PD 5",
-                  "t_ing": "Posesión de Vehículo e Ingreso"}
+    st.subheader("Resumen")
+    st.dataframe(conteo_df_filtered,
+                    hide_index=True,
+                    column_config={"Porcentaje": st.column_config.ProgressColumn(
+                        "Porcentaje",
+                        format="%d%%"
+                    )})
 
-        df = ingresos_df_filtered[["dia", "hora", "genero", "edad", "proposito", "veh_hogar", "ingreso"] + list(t_cols.keys())]
-        
-        st.subheader("Encuestas Realizadas")
-        
-        st.dataframe(df)
+    st.subheader("Graficos de Tiempos de Respuesta")
 
-        st.subheader("Resumen")
-        st.dataframe(conteo_df_filtered,
-                     hide_index=True,
-                     column_config={"Porcentaje": st.column_config.ProgressColumn(
-                         "Porcentaje",
-                         format="%d%%"
-                     )})
-
-        st.subheader("Graficos de Tiempos de Respuesta")
-
-        df['hora'] = pd.to_datetime(df['hora']) - pd.Timedelta(hours=4)
+    df['hora'] = pd.to_datetime(df['hora']) - pd.Timedelta(hours=4)
 
 
-        # Controlar dimensiones de los gráficos
-        plt.rcParams["figure.figsize"] = (8, 3)  # ancho x alto en pulgadas
-        for t_col, label_col in t_cols.items():
-            fig, ax = plt.subplots()
-            ax.plot(df["hora"], df[t_col], marker='o')
-            ax.set_xlabel("Hora")
-            ax.set_ylabel("segundos")
-            ax.set_ylim(0, max(60, df[t_col].max() + 1))
-            ax.set_title(f"Tiempo de Respuesta {label_col}")
+    # Controlar dimensiones de los gráficos
+    plt.rcParams["figure.figsize"] = (8, 3)  # ancho x alto en pulgadas
+    for t_col, label_col in t_cols.items():
+        fig, ax = plt.subplots()
+        ax.plot(df["hora"], df[t_col], marker='o')
+        ax.set_xlabel("Hora")
+        ax.set_ylabel("segundos")
+        ax.set_ylim(0, max(60, df[t_col].max() + 1))
+        ax.set_title(f"Tiempo de Respuesta {label_col}")
 
-            primera_hora = df["hora"].iloc[0]
-            ultima_hora = df["hora"].iloc[-1]
+        primera_hora = df["hora"].iloc[0]
+        ultima_hora = df["hora"].iloc[-1]
 
-            hora_media = primera_hora + (ultima_hora - primera_hora) / 2
+        hora_media = primera_hora + (ultima_hora - primera_hora) / 2
 
-            xticks = [df["hora"].iloc[0], hora_media, df["hora"].iloc[-1]]
-            xtick_labels = [xticks[0].strftime("%H:%M:%S"), xticks[1].strftime("%H:%M:%S"), xticks[2].strftime("%H:%M:%S")]
+        xticks = [df["hora"].iloc[0], hora_media, df["hora"].iloc[-1]]
+        xtick_labels = [xticks[0].strftime("%H:%M:%S"), xticks[1].strftime("%H:%M:%S"), xticks[2].strftime("%H:%M:%S")]
 
-            plt.xticks(ticks=xticks, labels=xtick_labels,rotation=45)
-            if label_col.startswith("PD"):
-                ax.axhline(10, color='red', linestyle='--', linewidth=1)
-                ax.axhline(20, color='red', linestyle='--', linewidth=1)
-                ax.axhline(30, color='red', linestyle='--', linewidth=1)
-            st.pyplot(fig)
+        plt.xticks(ticks=xticks, labels=xtick_labels,rotation=45)
+        if label_col.startswith("PD"):
+            ax.axhline(10, color='red', linestyle='--', linewidth=1)
+            ax.axhline(20, color='red', linestyle='--', linewidth=1)
+            ax.axhline(30, color='red', linestyle='--', linewidth=1)
+        st.pyplot(fig)
