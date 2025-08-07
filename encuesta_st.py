@@ -180,7 +180,7 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
     
     hay_auto = (altA_label == "Auto") or (altB_label == "Auto")
     if hay_auto:
-        texto_costo = "Tenga claro que el **costo** del auto corresponde aL gasto en **bencina** y **estacionamiento**, mientras que para la otra alternativa corresponde al **pasaje**."
+        texto_costo = "Tenga claro que el **costo** del auto corresponde al gasto en **bencina** y **estacionamiento**, mientras que para la otra alternativa corresponde al **pasaje**."
     else:
         texto_costo = "Tenga claro que el **costo** corresponde al **pasaje** de cada alternativa."
 
