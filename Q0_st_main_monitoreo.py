@@ -55,7 +55,7 @@ t_min_pd = st.number_input(
     step=1
 ) #frontend
 
-ingresos_df["val"] = (ingresos_df["t_pd1"] >= t_min_pd) * (ingresos_df["t_pd2"] >= t_min_pd) * (ingresos_df["t_pd3"] >= t_min_pd) * (ingresos_df["t_pd4"] >= t_min_pd)
+ingresos_df["val"] = (ingresos_df["t_pd1"] >= t_min_pd) * (ingresos_df["t_pd2"] >= t_min_pd) * (ingresos_df["t_pd3"] >= t_min_pd) * (ingresos_df["t_pd4"] >= t_min_pd) * (ingresos_df["t_pd5"] >= t_min_pd)
 
 st.subheader("Encuestas Válidas por Diseño") #frontend
 conteo_df = generar_encuestas_val_xdisenho(ingresos_df)
