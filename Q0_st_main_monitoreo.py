@@ -62,8 +62,7 @@ conteo_df = generar_encuestas_val_xdisenho(ingresos_df)
 st.dataframe(conteo_df, 
              hide_index=True, 
              column_config={"Porcentaje": st.column_config.ProgressColumn(
-                    "Porcentaje", 
-                    format="%d%%"
+                    "Porcentaje"
              )}) #frontend
 
 st.subheader("Encuestas Válidas por Encuestador") #frontend
@@ -71,8 +70,7 @@ conteo_xEncuestador_df = generar_resumen_encuestas_val(ingresos_df, "id_encuesta
 st.dataframe(conteo_xEncuestador_df, 
              hide_index=True,
              column_config={"Porcentaje": st.column_config.ProgressColumn(
-                    "Porcentaje", 
-                    format="%d%%"
+                    "Porcentaje"
              )}) #frontend
 
 st.divider()
