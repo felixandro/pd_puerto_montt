@@ -172,19 +172,34 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
     altA_label = data[f"alt{st.session_state.alt_A}"]
     altB_label = data[f"alt{st.session_state.alt_B}"]
     
+    tiene_transbordo = (int(len(altA_label.split("-"))-1)>0) or (int(len(altB_label.split("-"))-1)>0)
+    if tiene_transbordo:
+        texto_transbordo = ", cantidad de **transbordos**"
+    else:
+        texto_transbordo = ""
+    
+    hay_auto = (altA_label == "Auto") or (altB_label == "Auto")
+    if hay_auto:
+        texto_costo = "Tenga claro que el **costo** del auto corresponde aL gasto en **bencina** y **estacionamiento**, mientras que para la otra alternativa corresponde al **pasaje**."
+    else:
+        texto_costo = "Tenga claro que el **costo** corresponde al **pasaje** de cada alternativa."
+
+
     texto_introductorio1 = textwrap.dedent(f"""
         El objetivo de esta encuesta es conocer sus preferencias respecto al medio de transporte que usaría ante una eventual construcción de un teleférico en Puerto Montt.
 
         Para esto suponga un viaje desde **{origen}** al **Centro de Puerto Montt** (idéntico al que está realizando hoy) y que sus opciones son **{altA_label}** y **{altB_label}**.
 
-        Se le presentarán 5 escenarios distintos, donde las alternativas serán caracterizadas mediante su **costo** monetario y los **tiempos** que implicarían cada etapa del viaje. **(Mostrar ejemplo a continuación)**""")
-    
+        Se le presentarán 5 escenarios distintos, donde las alternativas serán caracterizadas mediante su **costo** monetario{texto_transbordo} y **tiempos** de viaje, espera y caminata. **(Ver ejemplo a continuación)**""")
+
     texto_introductorio2 = textwrap.dedent(f"""
-        Es crucial que **analice detenidamente** cada escenario, **compare** ambas alternativas y seleccione aquella que elegiría en un **contexto real**.
+        {texto_costo}
                                            
-        Queremos enfatizar que su elección **no debe verse influida** por si usted cree que el teleférico va o no a construirse. 
+        **ES CRUCIAL** que **analice detenidamente** cada escenario, **compare** los atributos de ambas alternativas y seleccione aquella que elegiría en una situación **real** con un contexto **idéntico** al de su actual viaje.
                                            
-        Por último, se deja claro que la encuesta es totalmente **anónima** y que **no hay respuestas correctas o incorrectas**.""")
+        Su elección **no debe verse influida** por si usted cree que el teleférico va o no a construirse.
+                                           
+        La encuesta es totalmente **anónima** y **no hay respuestas correctas o incorrectas**.""")
 
 
     be.texto_con_fondo(texto_introductorio1, upper_margin="1rem")
@@ -194,6 +209,7 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
 
     niveles_a_ejemplo = [altA_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_A}"] + [int(len(altA_label.split("-"))-1)]
     niveles_b_ejemplo = [altB_label] + data[f"T{st.session_state.nro_tarjeta}"][f"A{st.session_state.alt_B}"] + [int(len(altB_label.split("-"))-1)]
+    
     be.perfil_eleccion(niveles_a_ejemplo, niveles_b_ejemplo)
     be.texto_con_fondo(texto_introductorio2, upper_margin="1rem")
 
