@@ -60,7 +60,7 @@ t_max_pd = st.number_input(
     "Tiempo máximo de respuesta para PD (en segundos)",
     min_value=0,
     max_value=180,
-    value=60,
+    value=90,
     step=1
 ) #frontend
 
