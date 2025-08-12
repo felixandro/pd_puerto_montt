@@ -27,12 +27,13 @@ st.header("Monitoreo PD Puerto Montt")#frontend
 
 # Definir rango temporal (Fecha, Hora inicio, Hora Fin)
 
-fecha = st.date_input("Día", value=datetime.now().date())
+fecha_inicio = st.date_input("Día", value=datetime.now().date())
 hora_inicio_local = st.time_input("Hora de Inicio", value=pd.to_datetime("09:00:00").time())
+fecha_fin = st.date_input("Día", value=datetime.now().date())
 hora_fin_local = st.time_input("Hora de Fin", value=pd.to_datetime("17:00:00").time())
 
-start_date = (datetime.combine(fecha, hora_inicio_local) + timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%S%z") + "+00:00"
-end_date = (datetime.combine(fecha, hora_fin_local) + timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%S%z") + "+00:00"
+start_date = (datetime.combine(fecha_inicio, hora_inicio_local) + timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%S%z") + "+00:00"
+end_date = (datetime.combine(fecha_fin, hora_fin_local) + timedelta(hours=4)).strftime("%Y-%m-%dT%H:%M:%S%z") + "+00:00"
 
 # Obtener Datos asociados al rango temporal
 try:
