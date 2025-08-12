@@ -55,10 +55,23 @@ t_min_pd = st.number_input(
     step=1
 ) #frontend
 
-ingresos_df["val"] = (ingresos_df["t_pd1"] >= t_min_pd) * (ingresos_df["t_pd2"] >= t_min_pd) * (ingresos_df["t_pd3"] >= t_min_pd) * (ingresos_df["t_pd4"] >= t_min_pd) * (ingresos_df["t_pd5"] >= t_min_pd)
+ingresos_df["val"] = (ingresos_df["t_pd1"] + ingresos_df["t_pd2"] + ingresos_df["t_pd3"] + ingresos_df["t_pd4"] + ingresos_df["t_pd5"] >= 5 * t_min_pd)
 
 st.subheader("Encuestas Válidas por Diseño") #frontend
 conteo_df = generar_encuestas_val_xdisenho(ingresos_df)
+# Agregar fila de totales para 'val' y 'Total'
+total_val = conteo_df["Val"].sum()
+total_total = conteo_df["Total"].sum()
+total_row = pd.DataFrame({
+    "Diseño": ["Total"],
+    "Par": ["-"],
+    "Modo 1": ["-"],
+    "Modo 2": ["-"],
+    "Val": [total_val],
+    "Total": [total_total],
+    "Porcentaje": [total_val / total_total if total_total > 0 else 0]
+})
+conteo_df = pd.concat([conteo_df, total_row], ignore_index=True)
 st.dataframe(conteo_df, 
              hide_index=True, 
              column_config={"Porcentaje": st.column_config.ProgressColumn(
