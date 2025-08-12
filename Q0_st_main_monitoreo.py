@@ -56,7 +56,15 @@ t_min_pd = st.number_input(
     step=1
 ) #frontend
 
-ingresos_df["val"] = (ingresos_df["t_pd1"] + ingresos_df["t_pd2"] + ingresos_df["t_pd3"] + ingresos_df["t_pd4"] + ingresos_df["t_pd5"] >= 5 * t_min_pd)
+t_max_pd = st.number_input(
+    "Tiempo máximo de respuesta para PD (en segundos)",
+    min_value=0,
+    max_value=180,
+    value=60,
+    step=1
+) #frontend
+
+ingresos_df["val"] = (ingresos_df["t_pd1"] + ingresos_df["t_pd2"] + ingresos_df["t_pd3"] + ingresos_df["t_pd4"] + ingresos_df["t_pd5"] >= 5 * t_min_pd) * (ingresos_df["t_pd1"] + ingresos_df["t_pd2"] + ingresos_df["t_pd3"] + ingresos_df["t_pd4"] + ingresos_df["t_pd5"] <= 5 * t_max_pd)
 
 st.subheader("Encuestas Válidas por Diseño") #frontend
 conteo_df = generar_encuestas_val_xdisenho(ingresos_df)
