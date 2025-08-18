@@ -346,7 +346,7 @@ if st.session_state.perfiles and not st.session_state.ingreso:
 
     if veh_hogar != "" and ing_familiar != "":
         next_button_4 = st.button("Siguiente", use_container_width=True, type = "primary", key = "next_button_4")
-s
+
         if next_button_4:
             st.session_state.ingreso = True
             st.session_state.veh_hogar = veh_hogar
