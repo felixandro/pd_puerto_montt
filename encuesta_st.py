@@ -24,6 +24,11 @@ if "perfiles" not in st.session_state:
 if "ingreso" not in st.session_state:
     st.session_state.ingreso = False
 
+if "perfiles_jv" not in st.session_state:
+    st.session_state.intro_perfiles_jv = False
+    st.session_state.perfiles_jv = False
+    st.session_state.cursor_jv = 0
+
 #if "lista_tarjetas" not in st.session_state:
 #    st.session_state.lista_tarjetas = list(range(1,9))
 #    st.session_state.nro_tarjeta = choice(st.session_state.lista_tarjetas)
@@ -340,7 +345,7 @@ if st.session_state.perfiles and not st.session_state.ingreso:
     )
 
     if veh_hogar != "" and ing_familiar != "":
-        next_button_4 = st.button("Finalizar Encuesta", use_container_width=True, type = "primary")
+        next_button_4 = st.button("Siguiente", use_container_width=True, type = "primary")
         
         if next_button_4:
             st.session_state.ingreso = True
@@ -379,7 +384,98 @@ if st.session_state.perfiles and not st.session_state.ingreso:
             st.rerun()
 
 
-if st.session_state.ingreso:
+if st.session_state.ingreso and not st.session_state.intro_perfiles_jv:
+    be.texto_con_fondo("A continuación, le presentaremos los mismos escenarios anteriores, pero esta vez le pediremos que nos indique el costo que estaría dispuesto a pagar por la altenativa no elegida para que fuera escogida por usted.", upper_margin="1rem")
+
+    next_button_5 = st.button("Siguiente", use_container_width=True, type="primary")
+    if next_button_5:
+        st.session_state.intro_perfiles_jv = True
+
+if st.session_state.intro_perfiles_jv and not st.session_state.perfiles_jv:
+    
+    nro_disenho = st.session_state.nro_disenho
+    with open(f'Disenhos/disenho_{nro_disenho}.json', 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    altA_label = data[f"alt{st.session_state.alt_A}"]
+    altB_label = data[f"alt{st.session_state.alt_B}"]
+
+    cursor_jv = st.session_state.cursor_jv
+    nro_tarjeta = st.session_state.orden_tarjetas[cursor_jv]
+
+    eleccion = st.session_state.elecciones_dict[nro_tarjeta]
+
+    if eleccion == altA_label:
+        no_eleccion = altB_label
+        niveles_a = [altA_label] + data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_A}"] + [int(len(altA_label.split("-"))-1)]
+        niveles_b = [altB_label] + ["X"] + data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_B}"][1:] + [int(len(altB_label.split("-"))-1)]
+        costo_perfil = data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_B}"][0] 
+    else:
+        no_eleccion = altA_label
+        niveles_a = [altA_label] + ["X"] + data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_A}"][1:] + [int(len(altA_label.split("-"))-1)]
+        niveles_b = [altB_label] + data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_B}"] + [int(len(altB_label.split("-"))-1)]
+        costo_perfil = data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_A}"][0] 
+
+    be.texto_con_fondo(f" Pregunta {cursor_jv + 1}" , upper_margin=0)
+    be.texto_con_fondo(f" Asumiendo el siguiente escenario, donde eligió {eleccion}" , upper_margin=0)
+
+    be.perfil_eleccion(niveles_a, niveles_b)
+
+    be.texto_con_fondo(f"¿Cuanto debería ser el costo del {no_eleccion} para que fuera elegido por usted?", upper_margin=0)
+
+    costo_jv = st.number_input("", min_value=0, max_value=costo_perfil, value=costo_perfil, step=50, key=f"costo_jv_{nro_disenho}_{nro_tarjeta}")
+
+    next_button_6 = st.button("Siguiente", use_container_width=True, type="primary")
+
+    if next_button_6:
+        st.session_state.cursor_jv += 1
+        hora_actual = time.strftime("%Y-%m-%d %H:%M:%S")
+        respuesta_jv = {
+                    "id_encuestador": st.session_state.id_encuestador_valor,
+                    "lugar": st.session_state.lugar,
+                    "hora_id": st.session_state.hora_id,
+                    "genero": st.session_state.genero,
+                    "edad": st.session_state.edad,
+                    "proposito": st.session_state.proposito,
+                    "disenho": st.session_state.nro_disenho,
+                    "tarjeta": nro_tarjeta,
+                    "a1": data[f"alt{st.session_state.alt_A}"],
+                    "c_a1": data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_A}"][0],
+                    "tv_a1": data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_A}"][1],
+                    "te_a1": data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_A}"][2],
+                    "tc_a1": data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_A}"][3],
+                    "tr_a1": int(len(altA_label.split("-"))-1),
+                    "a2": data[f"alt{st.session_state.alt_B}"],
+                    "c_a2": data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_B}"][0],
+                    "tv_a2": data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_B}"][1],
+                    "te_a2": data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_B}"][2],
+                    "tc_a2": data[f"T{nro_tarjeta}"][f"A{st.session_state.alt_B}"][3],
+                    "tr_a2": int(len(altB_label.split("-"))-1),
+                    "choice": st.session_state.elecciones_dict[nro_tarjeta],
+                    "fecha": hora_actual,
+                    "bloque": st.session_state.nro_bloque,
+                    "id_respuesta": be.generar_id_respuesta(
+                        hora_id=st.session_state.hora_id,
+                        nro_disenho=st.session_state.nro_disenho,
+                        nro_tarjeta=nro_tarjeta,
+                        id_encuestador=st.session_state.id_encuestador_valor,
+                        edad=st.session_state.edad,
+                        genero=st.session_state.genero,
+                        proposito=st.session_state.proposito
+                    ) + "_jv",
+                    "new_cost" : costo_jv
+                }
+        
+        be.guardar_respuestas_jv(respuesta_jv)
+
+        if st.session_state.cursor_jv <= 4:
+            st.rerun()
+        else:
+            st.session_state.perfiles_jv = True
+            st.rerun()
+
+if st.session_state.perfiles_jv:
+
     be.texto_con_fondo("¡Encuesta Finalizada!", upper_margin="1rem")
 
     new_survey_button = st.button("Nueva Encuesta", use_container_width=True, type = "primary")
