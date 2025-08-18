@@ -154,8 +154,14 @@ def perfil_eleccion(niveles_a, niveles_b):
     for i in range(len(index)):
         if i == 0:
             # Formatear los valores de costo con separador de miles y signo $
-            niv_a = f"${niveles_a[i+1]:,}".replace(",", ".")
-            niv_b = f"${niveles_b[i+1]:,}".replace(",", ".")
+            try:
+                niv_a = f"${niveles_a[i+1]:,}".replace(",", ".")
+            except ValueError:
+                niv_a = "_______________"
+            try:
+                niv_b = f"${niveles_b[i+1]:,}".replace(",", ".")
+            except ValueError:
+                niv_b = "_______________"
         else:
             niv_a = niveles_a[i+1]
             niv_b = niveles_b[i+1]
@@ -240,6 +246,21 @@ def guardar_respuestas(respuestas):
     print("hola")
 
     response = supabase.table("bbdd_pd_v2").insert(respuestas).execute()
+
+    print("sdadsa")
+
+def guardar_respuestas_jv(respuestas):
+
+    print("Guardando respuestas:", respuestas)
+
+    # Configurar Supabase
+    SUPABASE_URL = "https://gkgxipnjsoxgqsaukhtg.supabase.co"
+    SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdrZ3hpcG5qc294Z3FzYXVraHRnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTAxMTI1NjEsImV4cCI6MjA2NTY4ODU2MX0.TNyYDvpLhBX-Ocr03jzdo9GulXYfYMmOh0Vx20hlJfg"
+    supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+    print("hola")
+
+    response = supabase.table("bbdd_pd_v2_jv").insert(respuestas).execute()
 
     print("sdadsa")
 
