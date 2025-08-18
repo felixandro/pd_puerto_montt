@@ -78,8 +78,8 @@ if not st.session_state.id_encuestador:
         )
 
         if id_encuestador != "" :
-            next_button_0 = st.button("Siguiente", use_container_width=True, type = "primary")
-            
+            next_button_0 = st.button("Siguiente", use_container_width=True, type = "primary", key = "next_button_0")
+
             if next_button_0:
                 st.session_state.id_encuestador = True
                 st.session_state.id_encuestador_valor = id_encuestador
@@ -146,8 +146,8 @@ if st.session_state.id_encuestador and not st.session_state.caracteristicas:
 
     if modo_par != "" and genero != "" and edad  and proposito != "":
 
-        next_button_1 = st.button("Siguiente", use_container_width=True, type = "primary")
-        
+        next_button_1 = st.button("Siguiente", use_container_width=True, type = "primary", key = "next_button_1")
+
         if next_button_1:
             st.session_state.caracteristicas = True
             st.session_state.modo_par = modo_par
@@ -219,7 +219,7 @@ if st.session_state.caracteristicas and not st.session_state.texto_introductorio
     be.texto_con_fondo(texto_introductorio2, upper_margin="1rem")
 
 
-    next_button_2 = st.button("Siguiente", use_container_width=True, type = "primary")
+    next_button_2 = st.button("Siguiente", use_container_width=True, type = "primary", key = "next_button_2")
     if next_button_2:
         st.session_state.texto_introductorio = True
         st.session_state.hora_id = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -255,8 +255,8 @@ elif st.session_state.texto_introductorio and not st.session_state.perfiles:
         st.session_state.elecciones_dict[st.session_state.nro_tarjeta] = altB_label
 
     if  st.session_state.nro_tarjeta in st.session_state.elecciones_dict:
-        next_button_3 = st.button("Siguiente", use_container_width=True, type = "primary")
-        
+        next_button_3 = st.button("Siguiente", use_container_width=True, type = "primary", key = "next_button_3")
+
         if next_button_3:
             st.session_state.lista_tarjetas.remove( st.session_state.nro_tarjeta)
             hora_actual = time.strftime("%Y-%m-%d %H:%M:%S")
@@ -345,8 +345,8 @@ if st.session_state.perfiles and not st.session_state.ingreso:
     )
 
     if veh_hogar != "" and ing_familiar != "":
-        next_button_4 = st.button("Siguiente", use_container_width=True, type = "primary")
-        
+        next_button_4 = st.button("Siguiente", use_container_width=True, type = "primary", key = "next_button_4")
+s
         if next_button_4:
             st.session_state.ingreso = True
             st.session_state.veh_hogar = veh_hogar
@@ -387,7 +387,7 @@ if st.session_state.perfiles and not st.session_state.ingreso:
 if st.session_state.ingreso and not st.session_state.intro_perfiles_jv:
     be.texto_con_fondo("A continuación, le presentaremos los mismos escenarios anteriores, pero esta vez le pediremos que nos indique el costo que estaría dispuesto a pagar por la altenativa no elegida para que fuera escogida por usted.", upper_margin="1rem")
 
-    next_button_5 = st.button("Siguiente", use_container_width=True, type="primary")
+    next_button_5 = st.button("Siguiente", use_container_width=True, type="primary", key="next_button_5")
     if next_button_5:
         st.session_state.intro_perfiles_jv = True
 
@@ -425,7 +425,7 @@ if st.session_state.intro_perfiles_jv and not st.session_state.perfiles_jv:
 
     costo_jv = st.number_input("", min_value=0, max_value=costo_perfil, value=costo_perfil, step=50, key=f"costo_jv_{nro_disenho}_{nro_tarjeta}")
 
-    next_button_6 = st.button("Siguiente", use_container_width=True, type="primary")
+    next_button_6 = st.button("Siguiente", use_container_width=True, type="primary", key="next_button_6")
 
     if next_button_6:
         st.session_state.cursor_jv += 1
